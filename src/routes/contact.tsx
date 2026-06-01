@@ -28,19 +28,28 @@ function ContactPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground font-sans">
       <SiteHeader />
-      <main className="flex-1 max-w-7xl mx-auto px-6 py-16 w-full grid lg:grid-cols-12 gap-12 items-start">
-        
-        {/* Left Column: Contact Form */}
-        <div className="lg:col-span-7 space-y-6">
-          <div>
-            <span className="text-xs uppercase tracking-widest text-primary font-bold block mb-3">Écrivez-nous</span>
-            <h1 className="font-display font-bold text-4xl md:text-5xl tracking-tight text-foreground mb-4">Contact.</h1>
-            <p className="text-muted-foreground text-sm leading-relaxed max-w-lg">
-              Une question, un besoin en recrutement, ou une demande de partenariat ? Notre équipe répond sous 48h ouvrées.
+      <main className="flex-1">
+        {/* Page Header */}
+        <section className="bg-primary text-primary-foreground py-16 px-6 relative overflow-hidden mb-12">
+          <div className="absolute right-0 bottom-0 w-96 h-96 bg-white/5 rounded-full -mr-32 -mb-32 pointer-events-none" />
+          <div className="max-w-7xl mx-auto z-10 relative">
+            <span className="text-xs uppercase tracking-widest text-accent-foreground/80 font-bold bg-white/10 px-3 py-1 rounded-full">
+              Écrivez-nous
+            </span>
+            <h1 className="font-display font-black text-4xl md:text-5xl tracking-tight mt-6 mb-4">
+              Contact.
+            </h1>
+            <p className="text-base md:text-lg opacity-90 max-w-2xl font-light leading-relaxed">
+              Une question, un besoin en recrutement, ou une demande de partenariat ? Notre équipe basée à Abidjan répond sous 48h ouvrées.
             </p>
           </div>
+        </section>
 
-          <form onSubmit={handleSubmit} className="space-y-4 bg-white border border-border p-6 md:p-8 rounded-3xl shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 pb-24 w-full grid lg:grid-cols-12 gap-12 items-start">
+          
+          {/* Left Column: Contact Form */}
+          <div className="lg:col-span-7 space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4 bg-white border border-border p-6 md:p-8 rounded-3xl shadow-sm">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="prenom" className="font-semibold text-xs text-muted-foreground">Prénom</Label>
@@ -116,7 +125,7 @@ function ContactPage() {
             ></iframe>
           </div>
         </div>
-
+      </div>
       </main>
       <SiteFooter />
     </div>
