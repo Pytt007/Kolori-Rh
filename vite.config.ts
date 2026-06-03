@@ -5,21 +5,23 @@ import tailwindcss from "@tailwindcss/vite";
 import tsConfigPaths from "vite-tsconfig-paths";
 import { nitro } from "nitro/vite";
 
-export default defineConfig({
-  plugins: [
-    tsConfigPaths({
-      projects: ["./tsconfig.json"],
-    }),
-    tailwindcss(),
-    tanstackStart({
-      server: { entry: "server" },
-    }),
-    nitro(),
-    react(),
-  ],
-  resolve: {
-    alias: {
-      "@": "/src",
+export default defineConfig(({ command }) => {
+  return {
+    plugins: [
+      tsConfigPaths({
+        projects: ["./tsconfig.json"],
+      }),
+      tailwindcss(),
+      tanstackStart({
+        server: { entry: "server" },
+      }),
+      command === "build" ? nitro() : null,
+      react(),
+    ].filter(Boolean),
+    resolve: {
+      alias: {
+        "@": "/src",
+      },
     },
-  },
+  };
 });
