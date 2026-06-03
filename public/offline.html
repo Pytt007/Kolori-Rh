@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hors ligne — Kolori RH</title>
+    <meta name="theme-color" content="#1D3A6C" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --navy: #1d3a6c;
+        --navy-dark: #14233e;
+        --accent: #d97706;
+        --bg: #f8fafc;
+        --text: #0f172a;
+        --muted: #64748b;
+        --border: #e2e8f0;
+        --white: #ffffff;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Background decorative blobs */
+      body::before {
+        content: "";
+        position: fixed;
+        top: -200px;
+        right: -200px;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(29, 58, 108, 0.08) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+        animation: float 8s ease-in-out infinite;
+      }
+      body::after {
+        content: "";
+        position: fixed;
+        bottom: -150px;
+        left: -150px;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(217, 119, 6, 0.06) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+        animation: float 10s ease-in-out infinite reverse;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px) rotate(0deg);
+        }
+        50% {
+          transform: translateY(-20px) rotate(5deg);
+        }
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(24px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulse-ring {
+        0% {
+          transform: scale(1);
+          opacity: 0.4;
+        }
+        100% {
+          transform: scale(1.8);
+          opacity: 0;
+        }
+      }
+
+      @keyframes spin-slow {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        padding: 3rem 2.5rem;
+        max-width: 400px;
+        width: 100%;
+        box-shadow:
+          0 1px 3px rgba(0, 0, 0, 0.04),
+          0 10px 40px rgba(29, 58, 108, 0.08),
+          0 40px 80px rgba(29, 58, 108, 0.04);
+        animation: fadeUp 0.5s ease both;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Wifi off icon container */
+      .icon-wrap {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 2rem;
+      }
+
+      .icon-ring {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: rgba(29, 58, 108, 0.1);
+        animation: pulse-ring 2.5s ease-out infinite;
+      }
+      .icon-ring:nth-child(2) {
+        animation-delay: 0.8s;
+      }
+
+      .icon-inner {
+        position: relative;
+        z-index: 1;
+        width: 84px;
+        height: 84px;
+        background: linear-gradient(135deg, var(--navy) 0%, #2a5298 100%);
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 8px auto 0;
+        box-shadow: 0 8px 24px rgba(29, 58, 108, 0.3);
+      }
+
+      .icon-inner svg {
+        width: 40px;
+        height: 40px;
+        stroke: white;
+        fill: none;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      /* Status badge */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #fef3c7;
+        color: #92400e;
+        border: 1px solid #fde68a;
+        border-radius: 100px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 4px 12px;
+        margin-bottom: 1.25rem;
+      }
+      .badge-dot {
+        width: 6px;
+        height: 6px;
+        background: #d97706;
+        border-radius: 50%;
+        animation: pulse-dot 1.5s ease-in-out infinite;
+      }
+      @keyframes pulse-dot {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.5;
+          transform: scale(0.75);
+        }
+      }
+
+      h1 {
+        font-family: "Montserrat", sans-serif;
+        font-size: 1.875rem;
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        color: var(--text);
+        margin-bottom: 0.75rem;
+        line-height: 1.15;
+      }
+
+      p {
+        font-size: 0.9rem;
+        color: var(--muted);
+        line-height: 1.7;
+        margin-bottom: 2rem;
+        max-width: 300px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      /* Feature pills */
+      .features {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 2rem;
+        text-align: left;
+      }
+
+      .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        background: #f8fafc;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      .feature-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        shrink: 0;
+      }
+
+      .feature-icon.green {
+        background: #d1fae5;
+      }
+      .feature-icon.blue {
+        background: #dbeafe;
+      }
+      .feature-icon.amber {
+        background: #fef3c7;
+      }
+
+      /* Button */
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        background: linear-gradient(135deg, var(--navy) 0%, #2a5298 100%);
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 14px;
+        font-family: "Inter", sans-serif;
+        font-size: 0.875rem;
+        font-weight: 700;
+        cursor: pointer;
+        letter-spacing: 0.03em;
+        box-shadow: 0 4px 16px rgba(29, 58, 108, 0.3);
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.15s ease,
+          opacity 0.15s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-primary::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(255, 255, 255, 0);
+        transition: background 0.15s ease;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 24px rgba(29, 58, 108, 0.4);
+      }
+      .btn-primary:hover::before {
+        background: rgba(255, 255, 255, 0.06);
+      }
+      .btn-primary:active {
+        transform: translateY(0);
+        opacity: 0.9;
+      }
+
+      .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        background: transparent;
+        color: var(--muted);
+        border: 1px solid var(--border);
+        padding: 12px 28px;
+        border-radius: 14px;
+        font-family: "Inter", sans-serif;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 10px;
+        transition:
+          background 0.15s ease,
+          color 0.15s ease;
+      }
+      .btn-secondary:hover {
+        background: #f1f5f9;
+        color: var(--text);
+      }
+
+      .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 1.5rem 0;
+      }
+
+      /* Footer branding */
+      .branding {
+        margin-top: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .logo-k {
+        width: 24px;
+        height: 24px;
+        background: var(--navy);
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Montserrat", sans-serif;
+        font-weight: 900;
+        font-size: 12px;
+        color: white;
+      }
+
+      .branding-text {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <!-- Icon with pulse rings -->
+      <div class="icon-wrap">
+        <div class="icon-ring"></div>
+        <div class="icon-ring"></div>
+        <div class="icon-inner">
+          <!-- Wifi-off icon (Lucide style) -->
+          <svg viewBox="0 0 24 24">
+            <line x1="1" y1="1" x2="23" y2="23" />
+            <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55" />
+            <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39" />
+            <path d="M10.71 5.05A16 16 0 0 1 22.56 9" />
+            <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88" />
+            <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
+            <circle cx="12" cy="20" r="1" fill="white" stroke="none" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Status badge -->
+      <div class="badge">
+        <span class="badge-dot"></span>
+        Connexion interrompue
+      </div>
+
+      <h1>Vous êtes<br />hors ligne</h1>
+      <p>
+        Vérifiez votre connexion internet et réessayez. Les pages déjà visitées restent accessibles.
+      </p>
+
+      <!-- Feature hints -->
+      <div class="features">
+        <div class="feature-item">
+          <div class="feature-icon green">✓</div>
+          <span>Pages déjà visitées disponibles</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon blue">📄</div>
+          <span>Vos CV sauvegardés accessibles</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon amber">⏳</div>
+          <span>Vos actions seront synchronisées</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Actions -->
+      <button class="btn-primary" onclick="retry()">
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="1 4 1 10 7 10" />
+          <path d="M3.51 15a9 9 0 1 0 .49-3.44" />
+        </svg>
+        Réessayer la connexion
+      </button>
+      <button class="btn-secondary" onclick="goHome()">← Retour à l'accueil</button>
+
+      <!-- Branding -->
+      <div class="branding">
+        <div class="logo-k">K</div>
+        <span class="branding-text">Kolori RH</span>
+      </div>
+    </div>
+
+    <script>
+      function retry() {
+        const btn = document.querySelector(".btn-primary");
+        btn.textContent = "Vérification…";
+        btn.disabled = true;
+        setTimeout(() => {
+          window.location.reload();
+        }, 600);
+      }
+
+      function goHome() {
+        window.location.href = "/";
+      }
+
+      // Auto-retry when back online
+      window.addEventListener("online", () => {
+        window.location.reload();
+      });
+    </script>
+  </body>
+</html>

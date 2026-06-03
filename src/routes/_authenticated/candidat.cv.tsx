@@ -7,14 +7,25 @@ import { useAuth } from "@/lib/auth-context";
 import { ensureCandidate } from "@/lib/candidate";
 import { Button } from "@/components/ui/button";
 import { Upload, FileText, Trash2, Download } from "lucide-react";
+import { ConfirmDialog } from "@/components/site/ConfirmDialog";
 
 export const Route = createFileRoute("/_authenticated/candidat/cv")({
   component: CandidatCV,
 });
 
-type CvRow = { id: string; nom_fichier: string; storage_path: string; taille: number | null; created_at: string };
+type CvRow = {
+  id: string;
+  nom_fichier: string;
+  storage_path: string;
+  taille: number | null;
+  created_at: string;
+};
 
-const ACCEPTED = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+const ACCEPTED = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+];
 const MAX_SIZE = 5 * 1024 * 1024;
 
 function CandidatCV() {
@@ -23,6 +34,8 @@ function CandidatCV() {
   const [docs, setDocs] = useState<CvRow[]>([]);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [cvToDelete, setCvToDelete] = useState<CvRow | null>(null);
 
   async function refresh(cid: string) {
     const { data } = await supabase
@@ -59,7 +72,9 @@ function CandidatCV() {
     setUploading(true);
     try {
       const path = `${user.id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_")}`;
-      const { error: upErr } = await supabase.storage.from("cvs").upload(path, file, { upsert: false });
+      const { error: upErr } = await supabase.storage
+        .from("cvs")
+        .upload(path, file, { upsert: false });
       if (upErr) throw upErr;
       const { error: insErr } = await supabase.from("cv_documents").insert({
         candidate_id: candidateId,
@@ -77,7 +92,7 @@ function CandidatCV() {
         id: `cv-${Date.now()}`,
         nom_fichier: file.name,
         candidate_id: candidateId,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       } as any);
       toast.success("CV ajouté (Mode Démo).");
       await refresh(candidateId);
@@ -87,9 +102,8 @@ function CandidatCV() {
     }
   }
 
-  async function remove(doc: CvRow) {
+  async function executeRemove(doc: CvRow) {
     if (!candidateId) return;
-    if (!confirm(`Supprimer "${doc.nom_fichier}" ?`)) return;
     try {
       const { error: sErr } = await supabase.storage.from("cvs").remove([doc.storage_path]);
       if (sErr) console.warn(sErr);
@@ -115,7 +129,9 @@ function CandidatCV() {
       toast.success("Téléchargement du fichier démo lancé.");
       return;
     }
-    const { data, error } = await supabase.storage.from("cvs").createSignedUrl(doc.storage_path, 60);
+    const { data, error } = await supabase.storage
+      .from("cvs")
+      .createSignedUrl(doc.storage_path, 60);
     if (error || !data) {
       toast.error("Lien indisponible.");
       return;
@@ -125,7 +141,9 @@ function CandidatCV() {
 
   return (
     <>
-      <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">Documents</div>
+      <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">
+        Documents
+      </div>
       <h1 className="font-display italic text-5xl mb-10">Mes CV.</h1>
 
       <div className="border-2 border-dashed border-border rounded-sm p-8 text-center mb-8 bg-card">
@@ -147,21 +165,54 @@ function CandidatCV() {
       </div>
 
       <div className="border border-border rounded-sm divide-y divide-border bg-card">
-        {docs.length === 0 && <div className="p-6 text-sm text-muted-foreground">Aucun CV pour l'instant.</div>}
+        {docs.length === 0 && (
+          <div className="p-6 text-sm text-muted-foreground">Aucun CV pour l'instant.</div>
+        )}
         {docs.map((d) => (
           <div key={d.id} className="p-4 flex items-center gap-4">
             <FileText className="h-5 w-5 text-muted-foreground" />
             <div className="flex-1 min-w-0">
               <div className="font-medium truncate">{d.nom_fichier}</div>
               <div className="text-xs text-muted-foreground font-mono">
-                {d.taille ? `${(d.taille / 1024).toFixed(0)} ko` : "—"} · {new Date(d.created_at).toLocaleDateString("fr-FR")}
+                {d.taille ? `${(d.taille / 1024).toFixed(0)} ko` : "—"} ·{" "}
+                {new Date(d.created_at).toLocaleDateString("fr-FR")}
               </div>
             </div>
-            <Button type="button" variant="ghost" size="sm" onClick={() => download(d)}><Download className="h-4 w-4" /></Button>
-            <Button type="button" variant="ghost" size="sm" onClick={() => remove(d)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+            <Button type="button" variant="ghost" size="sm" onClick={() => download(d)}>
+              <Download className="h-4 w-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setCvToDelete(d);
+                setConfirmOpen(true);
+              }}
+            >
+              <Trash2 className="h-4 w-4 text-destructive" />
+            </Button>
           </div>
         ))}
       </div>
+
+      <ConfirmDialog
+        isOpen={confirmOpen}
+        onClose={() => {
+          setConfirmOpen(false);
+          setCvToDelete(null);
+        }}
+        onConfirm={() => {
+          if (cvToDelete) {
+            executeRemove(cvToDelete);
+          }
+        }}
+        title="Supprimer le CV"
+        description={`Êtes-vous sûr de vouloir supprimer définitivement le CV "${cvToDelete?.nom_fichier}" ?`}
+        confirmText="Supprimer"
+        cancelText="Annuler"
+        variant="destructive"
+      />
     </>
   );
 }

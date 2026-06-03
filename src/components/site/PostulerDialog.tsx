@@ -6,13 +6,28 @@ import { getMockCvs, getMockApplications, saveMockApplication } from "@/lib/mock
 import { useAuth } from "@/lib/auth-context";
 import { ensureCandidate } from "@/lib/candidate";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
 type Cv = { id: string; nom_fichier: string };
 
-export function PostulerDialog({ offerId, offerTitle, onSubmitted }: { offerId: string; offerTitle: string; onSubmitted?: () => void }) {
+export function PostulerDialog({
+  offerId,
+  offerTitle,
+  onSubmitted,
+}: {
+  offerId: string;
+  offerTitle: string;
+  onSubmitted?: () => void;
+}) {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [cvs, setCvs] = useState<Cv[]>([]);
@@ -26,7 +41,7 @@ export function PostulerDialog({ offerId, offerTitle, onSubmitted }: { offerId: 
     (async () => {
       try {
         const cid = await ensureCandidate(user.id);
-        
+
         let list: Cv[] = [];
         try {
           const { data, error } = await supabase
@@ -76,7 +91,9 @@ export function PostulerDialog({ offerId, offerTitle, onSubmitted }: { offerId: 
         setCvs(mockCvs);
         if (mockCvs.length > 0) setCvId(mockCvs[0].id);
         const mockApps = getMockApplications();
-        const found = mockApps.find((a) => a.candidate_id === "mock-candidate-1" && a.offer_id === offerId);
+        const found = mockApps.find(
+          (a) => a.candidate_id === "mock-candidate-1" && a.offer_id === offerId,
+        );
         setAlreadyApplied(!!found);
       }
     })();
@@ -107,7 +124,7 @@ export function PostulerDialog({ offerId, offerTitle, onSubmitted }: { offerId: 
         cv_id: cvId || null,
         lettre: lettre || null,
         statut: "envoyee",
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       });
       toast.success("Candidature envoyée (Mode Démo).");
       setOpen(false);
@@ -120,38 +137,71 @@ export function PostulerDialog({ offerId, offerTitle, onSubmitted }: { offerId: 
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button size="lg" onClick={() => setOpen(true)}>Postuler à cette offre</Button>
+      <Button size="lg" onClick={() => setOpen(true)}>
+        Postuler à cette offre
+      </Button>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="font-display italic text-2xl">Postuler — {offerTitle}</DialogTitle>
+          <DialogTitle className="font-display italic text-2xl">
+            Postuler — {offerTitle}
+          </DialogTitle>
           <DialogDescription>Joignez votre CV et un mot d'introduction.</DialogDescription>
         </DialogHeader>
 
         {alreadyApplied ? (
-          <p className="text-sm text-muted-foreground">Vous avez déjà postulé à cette offre. Retrouvez le suivi dans <Link to="/candidat/candidatures" className="underline text-primary">vos candidatures</Link>.</p>
+          <p className="text-sm text-muted-foreground">
+            Vous avez déjà postulé à cette offre. Retrouvez le suivi dans{" "}
+            <Link to="/candidat/candidatures" className="underline text-primary">
+              vos candidatures
+            </Link>
+            .
+          </p>
         ) : (
           <div className="grid gap-4">
             <div className="grid gap-1.5">
-              <Label className="text-xs font-mono uppercase tracking-widest text-muted-foreground">CV joint</Label>
+              <Label className="text-xs font-mono uppercase tracking-widest text-muted-foreground">
+                CV joint
+              </Label>
               {cvs.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  Aucun CV en ligne. <Link to="/candidat/cv" className="underline text-primary">Déposer un CV</Link>.
+                  Aucun CV en ligne.{" "}
+                  <Link to="/candidat/cv" className="underline text-primary">
+                    Déposer un CV
+                  </Link>
+                  .
                 </p>
               ) : (
-                <select className="bg-background border border-border rounded-sm px-3 py-2 text-sm" value={cvId} onChange={(e) => setCvId(e.target.value)}>
-                  {cvs.map((c) => <option key={c.id} value={c.id}>{c.nom_fichier}</option>)}
+                <select
+                  className="bg-background border border-border rounded-sm px-3 py-2 text-sm"
+                  value={cvId}
+                  onChange={(e) => setCvId(e.target.value)}
+                >
+                  {cvs.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.nom_fichier}
+                    </option>
+                  ))}
                 </select>
               )}
             </div>
             <div className="grid gap-1.5">
-              <Label className="text-xs font-mono uppercase tracking-widest text-muted-foreground">Lettre de motivation (optionnel)</Label>
-              <Textarea rows={6} value={lettre} onChange={(e) => setLettre(e.target.value)} placeholder="Un mot pour vous présenter…" />
+              <Label className="text-xs font-mono uppercase tracking-widest text-muted-foreground">
+                Lettre de motivation (optionnel)
+              </Label>
+              <Textarea
+                rows={6}
+                value={lettre}
+                onChange={(e) => setLettre(e.target.value)}
+                placeholder="Un mot pour vous présenter…"
+              />
             </div>
           </div>
         )}
 
         <DialogFooter>
-          <Button variant="ghost" onClick={() => setOpen(false)}>Annuler</Button>
+          <Button variant="ghost" onClick={() => setOpen(false)}>
+            Annuler
+          </Button>
           {!alreadyApplied && (
             <Button disabled={submitting || cvs.length === 0} onClick={onSubmit}>
               {submitting ? "Envoi…" : "Envoyer ma candidature"}

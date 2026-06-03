@@ -20,8 +20,14 @@ function NouvelleOffre() {
     if (!user) return;
     (async () => {
       const c = await getMyCompany(user.id);
-      if (!c) { setBlocked("Vous devez d'abord créer votre fiche entreprise."); return; }
-      if (c.statut !== "validee") { setBlocked("Votre entreprise doit être validée avant de publier des offres."); return; }
+      if (!c) {
+        setBlocked("Vous devez d'abord créer votre fiche entreprise.");
+        return;
+      }
+      if (c.statut !== "validee") {
+        setBlocked("Votre entreprise doit être validée avant de publier des offres.");
+        return;
+      }
       setCompanyId(c.id);
     })();
   }, [user]);
@@ -32,7 +38,9 @@ function NouvelleOffre() {
         <h1 className="font-display italic text-5xl mb-4">Nouvelle offre.</h1>
         <div className="p-6 border border-dashed border-border rounded-sm">
           <p className="mb-3">{blocked}</p>
-          <Link to="/recruteur/entreprise" className="text-primary underline">Voir ma fiche entreprise →</Link>
+          <Link to="/recruteur/entreprise" className="text-primary underline">
+            Voir ma fiche entreprise →
+          </Link>
         </div>
       </>
     );
@@ -42,7 +50,9 @@ function NouvelleOffre() {
 
   return (
     <>
-      <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">Création</div>
+      <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">
+        Création
+      </div>
       <h1 className="font-display italic text-5xl mb-10">Nouvelle offre.</h1>
       <OfferForm
         submitLabel="Enregistrer en brouillon"
@@ -55,7 +65,7 @@ function NouvelleOffre() {
               company_id: companyId,
               statut: "brouillon",
               created_at: new Date().toISOString(),
-              publiee_le: null
+              publiee_le: null,
             };
             saveMockJobOffer(newOffer as any);
             toast.success("Offre créée en brouillon (simulation).");
@@ -65,7 +75,10 @@ function NouvelleOffre() {
           const { error } = await supabase
             .from("job_offers")
             .insert({ ...serializeOffer(v), company_id: companyId, statut: "brouillon" });
-          if (error) { toast.error(error.message); return; }
+          if (error) {
+            toast.error(error.message);
+            return;
+          }
           toast.success("Offre créée en brouillon.");
           navigate({ to: "/recruteur/offres" });
         }}

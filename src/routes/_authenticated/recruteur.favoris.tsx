@@ -53,16 +53,28 @@ function RecruteurFavoris() {
               titre: "Directeur des Ressources Humaines",
               ville: "Abidjan",
               bio: "Professionnel RH avec 8 ans d'expérience en gestion des talents, droit social et administration du personnel en Côte d'Ivoire.",
-              diplome: "Master en Management des Ressources Humaines — Université Félix Houphouët-Boigny",
-              competences: ["Recrutement", "Droit social", "SYSCOHADA", "Leadership", "Gestion des conflits"],
+              diplome:
+                "Master en Management des Ressources Humaines — Université Félix Houphouët-Boigny",
+              competences: [
+                "Recrutement",
+                "Droit social",
+                "SYSCOHADA",
+                "Leadership",
+                "Gestion des conflits",
+              ],
               pretention_salariale: "1 500 000 – 2 000 000 FCFA",
-              disponibilite: "Immédiate"
-            }
-          }
+              disponibilite: "Immédiate",
+            },
+          },
         ];
         setRows(mockFavs);
         setProfiles({
-          "mock-candidate-1": { id: "mock-candidate-1", prenom: "Koffi", nom: "Anan", telephone: "+225 07 08 09 10 11" }
+          "mock-candidate-1": {
+            id: "mock-candidate-1",
+            prenom: "Koffi",
+            nom: "Anan",
+            telephone: "+225 07 08 09 10 11",
+          },
         });
         setLoading(false);
         return;
@@ -71,7 +83,8 @@ function RecruteurFavoris() {
       // Récupérer les favoris avec les détails du candidat lié
       const { data, error } = await supabase
         .from("favorites")
-        .select(`
+        .select(
+          `
           id,
           candidate_id,
           candidate:candidates(
@@ -85,19 +98,18 @@ function RecruteurFavoris() {
             pretention_salariale,
             disponibilite
           )
-        `)
+        `,
+        )
         .eq("recruiter_id", user.id);
 
       if (error) throw error;
 
-      const favRows = (data as any ?? []) as FavoriteRow[];
+      const favRows = ((data as any) ?? []) as FavoriteRow[];
       setRows(favRows);
 
       // Récupérer les profils utilisateurs
-      const userIds = favRows
-        .map((r) => r.candidate?.user_id)
-        .filter(Boolean) as string[];
-      
+      const userIds = favRows.map((r) => r.candidate?.user_id).filter(Boolean) as string[];
+
       setProfiles(await fetchProfilesByIds(userIds));
     } catch (err) {
       console.error(err);
@@ -145,7 +157,8 @@ function RecruteurFavoris() {
     }
   };
 
-  if (loading) return <div className="text-sm font-mono text-muted-foreground">Chargement des favoris…</div>;
+  if (loading)
+    return <div className="text-sm font-mono text-muted-foreground">Chargement des favoris…</div>;
 
   return (
     <>
@@ -161,7 +174,10 @@ function RecruteurFavoris() {
           <p className="text-muted-foreground text-sm max-w-sm mx-auto mb-6">
             Marquez des candidats d'une étoile dans la CVthèque pour les regrouper ici.
           </p>
-          <Link to="/recruteur/cvtheque" className="text-sm font-mono uppercase tracking-widest text-primary hover:underline font-semibold">
+          <Link
+            to="/recruteur/cvtheque"
+            className="text-sm font-mono uppercase tracking-widest text-primary hover:underline font-semibold"
+          >
             Explorer la CVthèque →
           </Link>
         </div>
@@ -173,8 +189,8 @@ function RecruteurFavoris() {
 
             const name = displayName(profiles[c.user_id]);
             return (
-              <div 
-                key={r.id} 
+              <div
+                key={r.id}
                 className="relative group bg-card border border-border rounded-sm hover:border-primary transition-colors cursor-pointer"
                 onClick={() => setActive(c)}
               >
@@ -183,10 +199,14 @@ function RecruteurFavoris() {
                     {c.ville ?? "—"}
                   </div>
                   <div className="font-display italic text-2xl mb-1">{name}</div>
-                  <div className="text-sm text-muted-foreground mb-3">{c.titre ?? "Profil sans titre"}</div>
+                  <div className="text-sm text-muted-foreground mb-3">
+                    {c.titre ?? "Profil sans titre"}
+                  </div>
                   <div className="flex flex-wrap gap-1">
                     {(c.competences ?? []).slice(0, 6).map((s) => (
-                      <span key={s} className="text-xs px-2 py-1 bg-secondary rounded-sm">{s}</span>
+                      <span key={s} className="text-xs px-2 py-1 bg-secondary rounded-sm">
+                        {s}
+                      </span>
                     ))}
                   </div>
                 </div>
@@ -226,19 +246,47 @@ function RecruteurFavoris() {
                   {active.titre ?? "—"} {active.ville ? `· ${active.ville}` : ""}
                 </div>
                 {active.bio && <p className="whitespace-pre-line leading-relaxed">{active.bio}</p>}
-                {active.diplome && <div><span className="text-muted-foreground font-mono text-xs uppercase tracking-wider">Diplôme : </span>{active.diplome}</div>}
-                {active.disponibilite && <div><span className="text-muted-foreground font-mono text-xs uppercase tracking-wider">Disponibilité : </span>{active.disponibilite}</div>}
-                {active.pretention_salariale && <div><span className="text-muted-foreground font-mono text-xs uppercase tracking-wider">Prétention : </span>{active.pretention_salariale}</div>}
+                {active.diplome && (
+                  <div>
+                    <span className="text-muted-foreground font-mono text-xs uppercase tracking-wider">
+                      Diplôme :{" "}
+                    </span>
+                    {active.diplome}
+                  </div>
+                )}
+                {active.disponibilite && (
+                  <div>
+                    <span className="text-muted-foreground font-mono text-xs uppercase tracking-wider">
+                      Disponibilité :{" "}
+                    </span>
+                    {active.disponibilite}
+                  </div>
+                )}
+                {active.pretention_salariale && (
+                  <div>
+                    <span className="text-muted-foreground font-mono text-xs uppercase tracking-wider">
+                      Prétention :{" "}
+                    </span>
+                    {active.pretention_salariale}
+                  </div>
+                )}
                 {active.competences && active.competences.length > 0 && (
                   <div>
-                    <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2">Compétences</div>
+                    <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2">
+                      Compétences
+                    </div>
                     <div className="flex flex-wrap gap-2">
-                      {active.competences.map((s) => <span key={s} className="text-xs px-2 py-1 bg-secondary rounded-sm">{s}</span>)}
+                      {active.competences.map((s) => (
+                        <span key={s} className="text-xs px-2 py-1 bg-secondary rounded-sm">
+                          {s}
+                        </span>
+                      ))}
                     </div>
                   </div>
                 )}
                 <p className="text-xs text-muted-foreground border-t border-border pt-4">
-                  Pour échanger avec ce candidat, attendez qu'il postule à l'une de vos offres ou diffusez de nouvelles annonces ciblées.
+                  Pour échanger avec ce candidat, attendez qu'il postule à l'une de vos offres ou
+                  diffusez de nouvelles annonces ciblées.
                 </p>
               </div>
             </>

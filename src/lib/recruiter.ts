@@ -17,18 +17,24 @@ export const CONTRACT_TYPES = ["CDI", "CDD", "Freelance", "Stage", "Alternance"]
 export type ContractType = (typeof CONTRACT_TYPES)[number];
 
 export async function getMyCompany(userId: string) {
-  if (userId === "mock-recruiter-1") {
-    return {
-      id: "company-1",
-      nom: "Ivory Tech Solutions",
-      secteur: "Technologie & Informatique",
-      localisation: "Abidjan, Cocody",
-      site_web: "https://www.ivorytech.ci",
-      description: "Ivory Tech Solutions est un leader de la transformation digitale et des solutions logicielles sur mesure en Afrique de l'Ouest. Nous accompagnons les grandes institutions publiques et privées dans la modernisation de leurs infrastructures technologiques.",
-      logo_url: null,
-      statut: "validee",
-      owner_id: userId
-    };
+  if (userId.startsWith("mock-")) {
+    const { getMockAdminCompanies } = await import("./mockData");
+    const companies = getMockAdminCompanies();
+    const company = companies.find((c) => c.owner_id === userId);
+    return (
+      company || {
+        id: "company-1",
+        nom: "Ivory Tech Solutions",
+        secteur: "Technologie & Informatique",
+        localisation: "Abidjan, Cocody",
+        site_web: "https://www.ivorytech.ci",
+        description:
+          "Ivory Tech Solutions est un leader de la transformation digitale et des solutions logicielles sur mesure en Afrique de l'Ouest. Nous accompagnons les grandes institutions publiques et privées dans la modernisation de leurs infrastructures technologiques.",
+        logo_url: null,
+        statut: "validee",
+        owner_id: userId,
+      }
+    );
   }
   const { data, error } = await supabase
     .from("companies")
@@ -39,15 +45,43 @@ export async function getMyCompany(userId: string) {
   return data;
 }
 
-export type ProfileLite = { id: string; prenom: string | null; nom: string | null; telephone: string | null };
+export type ProfileLite = {
+  id: string;
+  prenom: string | null;
+  nom: string | null;
+  telephone: string | null;
+};
 
 /** Fetch a map of profile data by user ids (candidates.user_id → profiles.id). */
 export async function fetchProfilesByIds(ids: string[]): Promise<Record<string, ProfileLite>> {
   const unique = Array.from(new Set(ids.filter(Boolean)));
   if (unique.length === 0) return {};
-  const { data } = await supabase.from("profiles").select("id, prenom, nom, telephone").in("id", unique);
+
+  const mockIds = unique.filter((id) => id.startsWith("mock-"));
+  const realIds = unique.filter((id) => !id.startsWith("mock-"));
+
   const map: Record<string, ProfileLite> = {};
-  (data ?? []).forEach((p) => { map[p.id] = p as ProfileLite; });
+
+  if (mockIds.length > 0) {
+    const { getMockUsers } = await import("./mockData");
+    const mockUsers = getMockUsers();
+    mockUsers.forEach((u) => {
+      if (mockIds.includes(u.id)) {
+        map[u.id] = { id: u.id, prenom: u.prenom, nom: u.nom, telephone: u.telephone };
+      }
+    });
+  }
+
+  if (realIds.length > 0) {
+    const { data } = await supabase
+      .from("profiles")
+      .select("id, prenom, nom, telephone")
+      .in("id", realIds);
+    (data ?? []).forEach((p) => {
+      map[p.id] = p as ProfileLite;
+    });
+  }
+
   return map;
 }
 

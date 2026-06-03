@@ -59,6 +59,7 @@ Le site est disponible sur **http://localhost:5173**
 Le site dispose d'un **mode simulation complet** — aucune configuration Supabase nécessaire pour tester.
 
 Sur la page `/connexion`, cliquez sur :
+
 - **"Accès Candidat Démo"** → Espace candidat avec données fictives
 - **"Accès Recruteur Démo"** → Espace recruteur avec données fictives
 
@@ -115,17 +116,17 @@ src/
 
 ## 🛠️ Stack technique
 
-| Technologie | Usage |
-|-------------|-------|
-| **React 18** | Framework UI |
-| **TanStack Router** | Routing file-based |
-| **Vite** | Build tool |
-| **TypeScript** | Typage |
-| **Tailwind CSS v4** | Styling |
-| **shadcn/ui** | Composants UI |
-| **Supabase** | Backend (auth, BDD, storage) |
-| **Sonner** | Notifications toast |
-| **Lucide React** | Icônes |
+| Technologie         | Usage                        |
+| ------------------- | ---------------------------- |
+| **React 18**        | Framework UI                 |
+| **TanStack Router** | Routing file-based           |
+| **Vite**            | Build tool                   |
+| **TypeScript**      | Typage                       |
+| **Tailwind CSS v4** | Styling                      |
+| **shadcn/ui**       | Composants UI                |
+| **Supabase**        | Backend (auth, BDD, storage) |
+| **Sonner**          | Notifications toast          |
+| **Lucide React**    | Icônes                       |
 
 ---
 
@@ -135,17 +136,17 @@ src/
 
 Le projet utilise les tables suivantes dans Supabase :
 
-| Table | Description |
-|-------|-------------|
-| `profiles` | Profils utilisateurs (prénom, nom, téléphone) |
-| `candidates` | Profils candidats (titre, bio, compétences) |
-| `companies` | Fiches entreprises |
-| `job_offers` | Offres d'emploi |
-| `applications` | Candidatures |
-| `cv_documents` | Documents CV |
-| `messages` | Messagerie |
-| `notifications` | Notifications in-app |
-| `favorites` | Candidats favoris des recruteurs |
+| Table           | Description                                   |
+| --------------- | --------------------------------------------- |
+| `profiles`      | Profils utilisateurs (prénom, nom, téléphone) |
+| `candidates`    | Profils candidats (titre, bio, compétences)   |
+| `companies`     | Fiches entreprises                            |
+| `job_offers`    | Offres d'emploi                               |
+| `applications`  | Candidatures                                  |
+| `cv_documents`  | Documents CV                                  |
+| `messages`      | Messagerie                                    |
+| `notifications` | Notifications in-app                          |
+| `favorites`     | Candidats favoris des recruteurs              |
 
 > 📁 Le schéma SQL complet est dans `supabase/` (si disponible) ou à recréer manuellement.
 
@@ -157,6 +158,7 @@ Le projet utilise les tables suivantes dans Supabase :
 ### Authentification
 
 Activez dans Supabase > Authentication > Providers :
+
 - **Email/Password** (obligatoire)
 - **Google** (optionnel)
 
@@ -166,11 +168,11 @@ Activez dans Supabase > Authentication > Providers :
 
 ### Couleurs du thème
 
-| Rôle | Couleur | HSL |
-|------|---------|-----|
-| **Primary** | Navy Blue (Kolori) | `hsl(219 51% 24%)` |
-| **Accent** | Rouge Kolori | `hsl(359 70% 36%)` |
-| **Background** | Blanc | `hsl(0 0% 100%)` |
+| Rôle           | Couleur            | HSL                |
+| -------------- | ------------------ | ------------------ |
+| **Primary**    | Navy Blue (Kolori) | `hsl(219 51% 24%)` |
+| **Accent**     | Rouge Kolori       | `hsl(359 70% 36%)` |
+| **Background** | Blanc              | `hsl(0 0% 100%)`   |
 
 ### Polices
 
@@ -243,6 +245,7 @@ VITE_SUPABASE_PROJECT_ID=...
 ## 📝 Données de démonstration
 
 Le mode démo inclut :
+
 - **5 entreprises** ivoiriennes fictives (Ivory Tech, BCI Finance, SCI Immobilier...)
 - **6 offres d'emploi** (DRH, Développeur Full-Stack, Comptable...)
 - **3 candidats** avec profils complets

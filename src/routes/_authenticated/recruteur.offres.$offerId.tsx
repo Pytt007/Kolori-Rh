@@ -2,10 +2,16 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { OFFER_STATUS_LABELS, displayName, fetchProfilesByIds, type ProfileLite } from "@/lib/recruiter";
+import {
+  OFFER_STATUS_LABELS,
+  displayName,
+  fetchProfilesByIds,
+  type ProfileLite,
+} from "@/lib/recruiter";
 import { APPLICATION_STATUS_LABELS } from "@/lib/candidate";
 import { OfferForm, serializeOffer } from "@/components/site/OfferForm";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/site/ConfirmDialog";
 
 export const Route = createFileRoute("/_authenticated/recruteur/offres/$offerId")({
   component: EditOffre,
@@ -41,7 +47,8 @@ function EditOffre() {
   const [loading, setLoading] = useState(true);
 
   async function load() {
-    const mockUserStr = typeof window !== "undefined" ? localStorage.getItem("mock_auth_user") : null;
+    const mockUserStr =
+      typeof window !== "undefined" ? localStorage.getItem("mock_auth_user") : null;
     const isMock = mockUserStr ? JSON.parse(mockUserStr).id === "mock-recruiter-1" : false;
 
     if (isMock) {
@@ -51,8 +58,12 @@ function EditOffre() {
       if (match) {
         setOffer({
           ...match,
-          competences_requises: match.competences_requises ? match.competences_requises.split(",").map(c => c.trim()) : null,
-          teletravail: match.teletravail ? "oui" : "non"
+          competences_requises: match.competences_requises
+            ? typeof match.competences_requises === "string"
+              ? match.competences_requises.split(",").map((c) => c.trim())
+              : match.competences_requises
+            : null,
+          teletravail: match.teletravail ? "oui" : "non",
         } as any);
         const allApps = getMockApplications();
         const matchApps = allApps.filter((a) => a.offer_id === offerId);
@@ -64,8 +75,8 @@ function EditOffre() {
             id: a.candidate_id,
             user_id: a.candidate_id,
             titre: "Directeur des Ressources Humaines",
-            ville: "Abidjan"
-          }
+            ville: "Abidjan",
+          },
         }));
         setApps(formattedApps);
         setProfiles({
@@ -73,8 +84,8 @@ function EditOffre() {
             id: "mock-candidate-1",
             prenom: "Koffi",
             nom: "Anan",
-            telephone: "+225 07 08 09 10 11"
-          }
+            telephone: "+225 07 08 09 10 11",
+          },
         });
       }
       setLoading(false);
@@ -82,7 +93,11 @@ function EditOffre() {
     }
 
     try {
-      const { data } = await supabase.from("job_offers").select("*").eq("id", offerId).maybeSingle();
+      const { data } = await supabase
+        .from("job_offers")
+        .select("*")
+        .eq("id", offerId)
+        .maybeSingle();
       setOffer(data as Offer | null);
       const { data: a } = await supabase
         .from("applications")
@@ -91,7 +106,9 @@ function EditOffre() {
         .order("created_at", { ascending: false });
       const list = (a as unknown as App[]) ?? [];
       setApps(list);
-      setProfiles(await fetchProfilesByIds(list.map((x) => x.candidate?.user_id).filter(Boolean) as string[]));
+      setProfiles(
+        await fetchProfilesByIds(list.map((x) => x.candidate?.user_id).filter(Boolean) as string[]),
+      );
     } catch (e) {
       console.warn("Failed to load offer from Supabase, trying mock fallback:", e);
       const { getMockJobOffers, getMockApplications } = await import("@/lib/mockData");
@@ -100,8 +117,12 @@ function EditOffre() {
       if (match) {
         setOffer({
           ...match,
-          competences_requises: match.competences_requises ? match.competences_requises.split(",").map(c => c.trim()) : null,
-          teletravail: match.teletravail ? "oui" : "non"
+          competences_requises: match.competences_requises
+            ? typeof match.competences_requises === "string"
+              ? match.competences_requises.split(",").map((c) => c.trim())
+              : match.competences_requises
+            : null,
+          teletravail: match.teletravail ? "oui" : "non",
         } as any);
         const allApps = getMockApplications();
         const matchApps = allApps.filter((a) => a.offer_id === offerId);
@@ -113,8 +134,8 @@ function EditOffre() {
             id: a.candidate_id,
             user_id: a.candidate_id,
             titre: "Directeur des Ressources Humaines",
-            ville: "Abidjan"
-          }
+            ville: "Abidjan",
+          },
         }));
         setApps(formattedApps);
         setProfiles({
@@ -122,19 +143,22 @@ function EditOffre() {
             id: "mock-candidate-1",
             prenom: "Koffi",
             nom: "Anan",
-            telephone: "+225 07 08 09 10 11"
-          }
+            telephone: "+225 07 08 09 10 11",
+          },
         });
       }
     } finally {
       setLoading(false);
     }
   }
-  useEffect(() => { load(); }, [offerId]);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  useEffect(() => {
+    load();
+  }, [offerId]);
 
-  async function deleteOffer() {
-    if (!confirm("Supprimer cette offre ? Cette action est définitive.")) return;
-    const mockUserStr = typeof window !== "undefined" ? localStorage.getItem("mock_auth_user") : null;
+  async function executeDeleteOffer() {
+    const mockUserStr =
+      typeof window !== "undefined" ? localStorage.getItem("mock_auth_user") : null;
     const isMock = mockUserStr ? JSON.parse(mockUserStr).id === "mock-recruiter-1" : false;
     if (isMock) {
       const { getMockJobOffers } = await import("@/lib/mockData");
@@ -145,7 +169,10 @@ function EditOffre() {
       return;
     }
     const { error } = await supabase.from("job_offers").delete().eq("id", offerId);
-    if (error) { toast.error(error.message); return; }
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     toast.success("Offre supprimée.");
     navigate({ to: "/recruteur/offres" });
   }
@@ -157,13 +184,24 @@ function EditOffre() {
 
   return (
     <>
-      <Link to="/recruteur/offres" className="text-xs font-mono uppercase tracking-widest text-muted-foreground hover:text-primary">← Retour aux offres</Link>
+      <Link
+        to="/recruteur/offres"
+        className="text-xs font-mono uppercase tracking-widest text-muted-foreground hover:text-primary"
+      >
+        ← Retour aux offres
+      </Link>
       <div className="flex items-end justify-between mt-3 mb-10 flex-wrap gap-4">
         <div>
-          <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2">Édition</div>
+          <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2">
+            Édition
+          </div>
           <h1 className="font-display italic text-5xl">{offer.titre}</h1>
         </div>
-        <span className={`text-xs font-mono uppercase tracking-widest px-2 py-1 rounded-sm ${s?.tone}`}>{s?.label}</span>
+        <span
+          className={`text-xs font-mono uppercase tracking-widest px-2 py-1 rounded-sm ${s?.tone}`}
+        >
+          {s?.label}
+        </span>
       </div>
 
       <OfferForm
@@ -180,7 +218,8 @@ function EditOffre() {
           competences_requises: (offer.competences_requises ?? []).join(", "),
         }}
         onSubmit={async (v) => {
-          const mockUserStr = typeof window !== "undefined" ? localStorage.getItem("mock_auth_user") : null;
+          const mockUserStr =
+            typeof window !== "undefined" ? localStorage.getItem("mock_auth_user") : null;
           const isMock = mockUserStr ? JSON.parse(mockUserStr).id === "mock-recruiter-1" : false;
           if (isMock) {
             const { getMockJobOffers, saveMockJobOffer } = await import("@/lib/mockData");
@@ -197,41 +236,75 @@ function EditOffre() {
             }
             return;
           }
-          const { error } = await supabase.from("job_offers").update(serializeOffer(v)).eq("id", offerId);
-          if (error) { toast.error(error.message); return; }
+          const { error } = await supabase
+            .from("job_offers")
+            .update(serializeOffer(v))
+            .eq("id", offerId);
+          if (error) {
+            toast.error(error.message);
+            return;
+          }
           toast.success("Offre mise à jour.");
           load();
         }}
       />
 
       <div className="mt-10 flex gap-3">
-        <Button variant="ghost" onClick={deleteOffer}>Supprimer l'offre</Button>
+        <Button variant="ghost" onClick={() => setConfirmOpen(true)}>
+          Supprimer l'offre
+        </Button>
       </div>
 
       <div className="mt-16">
         <h2 className="font-display italic text-3xl mb-6">Candidatures ({apps.length})</h2>
         {apps.length === 0 ? (
-          <div className="text-sm text-muted-foreground p-6 border border-dashed border-border rounded-sm">Aucune candidature reçue.</div>
+          <div className="text-sm text-muted-foreground p-6 border border-dashed border-border rounded-sm">
+            Aucune candidature reçue.
+          </div>
         ) : (
           <div className="border border-border rounded-sm divide-y divide-border bg-card">
             {apps.map((a) => {
-              const st = APPLICATION_STATUS_LABELS[a.statut] ?? { label: a.statut, tone: "bg-muted" };
+              const st = APPLICATION_STATUS_LABELS[a.statut] ?? {
+                label: a.statut,
+                tone: "bg-muted",
+              };
               const name = displayName(a.candidate ? profiles[a.candidate.user_id] : null);
               return (
-                <Link key={a.id} to="/recruteur/candidatures" className="p-4 flex items-center justify-between gap-4 hover:bg-secondary/40">
+                <Link
+                  key={a.id}
+                  to="/recruteur/candidatures"
+                  className="p-4 flex items-center justify-between gap-4 hover:bg-secondary/40"
+                >
                   <div>
                     <div className="font-medium">{name}</div>
                     <div className="text-xs text-muted-foreground font-mono">
-                      {a.candidate?.titre ?? "Profil"} {a.candidate?.ville ? `· ${a.candidate.ville}` : ""} · {new Date(a.created_at).toLocaleDateString("fr-FR")}
+                      {a.candidate?.titre ?? "Profil"}{" "}
+                      {a.candidate?.ville ? `· ${a.candidate.ville}` : ""} ·{" "}
+                      {new Date(a.created_at).toLocaleDateString("fr-FR")}
                     </div>
                   </div>
-                  <span className={`text-xs font-mono uppercase tracking-widest px-2 py-1 rounded-sm ${st.tone}`}>{st.label}</span>
+                  <span
+                    className={`text-xs font-mono uppercase tracking-widest px-2 py-1 rounded-sm ${st.tone}`}
+                  >
+                    {st.label}
+                  </span>
                 </Link>
               );
             })}
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={executeDeleteOffer}
+        title="Supprimer l'offre"
+        description="Êtes-vous sûr de vouloir supprimer cette offre ? Cette action est définitive et irréversible."
+        confirmText="Supprimer"
+        cancelText="Annuler"
+        variant="destructive"
+      />
     </>
   );
 }

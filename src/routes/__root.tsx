@@ -13,7 +13,7 @@ import appCss from "../styles.css?url";
 import { AuthProvider } from "@/lib/auth-context";
 import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
-
+import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 
 function NotFoundComponent() {
   return (
@@ -76,42 +76,77 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      // Viewport — clé pour le PWA mobile
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "Kolori Rh — Plateforme de recrutement RH" },
-      { name: "description", content: "La plateforme qui connecte talents et entreprises. Déposez votre CV, publiez vos offres, trouvez votre prochain chapitre professionnel." },
+      {
+        name: "description",
+        content:
+          "La plateforme qui connecte talents et entreprises. Déposez votre CV, publiez vos offres, trouvez votre prochain chapitre professionnel.",
+      },
+      // PWA — couleur de thème (barre navigateur / status bar)
+      { name: "theme-color", content: "#1D3A6C" },
+      { name: "theme-color", content: "#ffffff", media: "(prefers-color-scheme: light)" },
+      // PWA — iOS / Safari
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      { name: "apple-mobile-web-app-title", content: "Kolori RH" },
+      // PWA — Windows / Microsoft
+      { name: "msapplication-TileColor", content: "#1D3A6C" },
+      { name: "msapplication-tap-highlight", content: "no" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      // OG / Twitter
       { property: "og:title", content: "Kolori Rh — Plateforme de recrutement RH" },
-      { property: "og:description", content: "La plateforme qui connecte talents et entreprises. Déposez votre CV, publiez vos offres, trouvez votre prochain chapitre professionnel." },
+      {
+        property: "og:description",
+        content:
+          "La plateforme qui connecte talents et entreprises. Déposez votre CV, publiez vos offres, trouvez votre prochain chapitre professionnel.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:title", content: "Kolori Rh — Plateforme de recrutement RH" },
-      { name: "twitter:description", content: "La plateforme qui connecte talents et entreprises. Déposez votre CV, publiez vos offres, trouvez votre prochain chapitre professionnel." },
+      {
+        name: "twitter:description",
+        content:
+          "La plateforme qui connecte talents et entreprises. Déposez votre CV, publiez vos offres, trouvez votre prochain chapitre professionnel.",
+      },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-      links: [
-        { rel: "preconnect", href: "https://fonts.googleapis.com" },
-        { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-        { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" },
-        { rel: "stylesheet", href: appCss },
-      ],
-    }),
-    shellComponent: RootShell,
-    component: RootComponent,
-    notFoundComponent: NotFoundComponent,
-    errorComponent: ErrorComponent,
-  });
-  
-  function RootShell({ children }: { children: ReactNode }) {
-    return (
-      <html lang="fr">
-        <head>
-          <HeadContent />
-        </head>
-        <body>
-          {children}
-          <Scripts />
-        </body>
-      </html>
-    );
-  }
+    links: [
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap",
+      },
+      { rel: "stylesheet", href: appCss },
+      // PWA — manifest
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      // PWA — Apple touch icon
+      { rel: "apple-touch-icon", href: "/icons/apple-touch-icon.png" },
+      { rel: "apple-touch-icon", sizes: "180x180", href: "/icons/apple-touch-icon.png" },
+      // Favicon
+      { rel: "icon", type: "image/png", href: "/icons/icon-192.png" },
+    ],
+  }),
+  shellComponent: RootShell,
+  component: RootComponent,
+  notFoundComponent: NotFoundComponent,
+  errorComponent: ErrorComponent,
+});
+
+function RootShell({ children }: { children: ReactNode }) {
+  return (
+    <html lang="fr">
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        {children}
+        <Scripts />
+      </body>
+    </html>
+  );
+}
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
@@ -123,6 +158,8 @@ function RootComponent() {
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
         <Toaster />
+        {/* PWA: install banner + offline indicator */}
+        <PWAInstallBanner />
       </AuthProvider>
     </QueryClientProvider>
   );
@@ -132,7 +169,9 @@ function AuthInvalidator() {
   const router = useRouter();
   const queryClient = useQueryClient();
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
       router.invalidate();
       queryClient.invalidateQueries();
     });
@@ -140,4 +179,3 @@ function AuthInvalidator() {
   }, [router, queryClient]);
   return null;
 }
-

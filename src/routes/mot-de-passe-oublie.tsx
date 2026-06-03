@@ -36,17 +36,28 @@ function ForgotPage() {
       eyebrow="Récupération"
       title="Mot de passe oublié."
       subtitle="Indiquez votre email, nous vous enverrons un lien de réinitialisation."
-      footer={<Link to="/connexion" className="text-primary font-semibold hover:underline">Retour à la connexion</Link>}
+      footer={
+        <Link to="/connexion" className="text-primary font-semibold hover:underline">
+          Retour à la connexion
+        </Link>
+      }
     >
       {sent ? (
         <div className="p-6 bg-secondary rounded-sm text-sm">
-          Si un compte existe pour <strong>{email}</strong>, un lien de réinitialisation vient d'être envoyé.
+          Si un compte existe pour <strong>{email}</strong>, un lien de réinitialisation vient
+          d'être envoyé.
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Input
+              id="email"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
           <Button type="submit" className="w-full" disabled={busy}>
             {busy ? "Envoi…" : "Envoyer le lien"}

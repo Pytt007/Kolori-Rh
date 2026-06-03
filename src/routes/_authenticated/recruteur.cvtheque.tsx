@@ -6,7 +6,8 @@ import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Star } from "lucide-react";
+import { Star, FileText, Download } from "lucide-react";
+import { getMockCvs } from "@/lib/mockData";
 
 export const Route = createFileRoute("/_authenticated/recruteur/cvtheque")({
   component: CVtheque,
@@ -33,6 +34,9 @@ function CVtheque() {
   const [q, setQ] = useState("");
   const [ville, setVille] = useState("");
   const [active, setActive] = useState<Candidate | null>(null);
+  const [cvs, setCvs] = useState<
+    Record<string, { id: string; nom_fichier: string; storage_path: string }[]>
+  >({});
 
   async function loadData() {
     if (!user) return;
@@ -46,10 +50,18 @@ function CVtheque() {
             titre: "Directeur des Ressources Humaines",
             ville: "Abidjan",
             bio: "Professionnel RH avec 8 ans d'expérience en gestion des talents, droit social et administration du personnel en Côte d'Ivoire. Passionné par l'accompagnement des équipes et la transformation organisationnelle.",
-            diplome: "Master en Management des Ressources Humaines — Université Félix Houphouët-Boigny",
-            competences: ["Recrutement", "Droit social", "SYSCOHADA", "Leadership", "Gestion des conflits", "Formation"],
+            diplome:
+              "Master en Management des Ressources Humaines — Université Félix Houphouët-Boigny",
+            competences: [
+              "Recrutement",
+              "Droit social",
+              "SYSCOHADA",
+              "Leadership",
+              "Gestion des conflits",
+              "Formation",
+            ],
             pretention_salariale: "1 500 000 – 2 000 000 FCFA",
-            disponibilite: "Immédiate"
+            disponibilite: "Immédiate",
           },
           {
             id: "mock-candidate-2",
@@ -57,10 +69,11 @@ function CVtheque() {
             titre: "Développeur Full-Stack React / Node.js",
             ville: "Abidjan",
             bio: "Développeur passionné avec 5 ans d'expérience dans la création d'applications web modernes. Maîtrise des architectures microservices et des pratiques DevOps.",
-            diplome: "Licence en Informatique — Institut National Polytechnique Félix Houphouët-Boigny",
+            diplome:
+              "Licence en Informatique — Institut National Polytechnique Félix Houphouët-Boigny",
             competences: ["React", "Node.js", "TypeScript", "PostgreSQL", "Docker", "AWS"],
             pretention_salariale: "800 000 – 1 200 000 FCFA",
-            disponibilite: "1 mois de préavis"
+            disponibilite: "1 mois de préavis",
           },
           {
             id: "mock-candidate-3",
@@ -69,16 +82,37 @@ function CVtheque() {
             ville: "Bouaké",
             bio: "Expert comptable certifié spécialisé en comptabilité générale et fiscalité ivoirienne. Expérience en cabinet et en entreprise industrielle.",
             diplome: "BTS Comptabilité et Gestion — Institut Supérieur de Commerce d'Abidjan",
-            competences: ["Comptabilité générale", "SYSCOHADA", "Déclarations fiscales", "Paie", "Excel"],
+            competences: [
+              "Comptabilité générale",
+              "SYSCOHADA",
+              "Déclarations fiscales",
+              "Paie",
+              "Excel",
+            ],
             pretention_salariale: "600 000 – 900 000 FCFA",
-            disponibilite: "2 semaines"
-          }
+            disponibilite: "2 semaines",
+          },
         ];
         setRows(mockCandidates);
         setProfiles({
-          "mock-candidate-1": { id: "mock-candidate-1", prenom: "Koffi", nom: "Anan", telephone: "+225 07 08 09 10 11" },
-          "mock-candidate-2": { id: "mock-candidate-2", prenom: "Serge", nom: "Kouassi", telephone: "+225 05 06 07 08 09" },
-          "mock-candidate-3": { id: "mock-candidate-3", prenom: "Aminata", nom: "Diallo", telephone: "+225 01 02 03 04 05" }
+          "mock-candidate-1": {
+            id: "mock-candidate-1",
+            prenom: "Koffi",
+            nom: "Anan",
+            telephone: "+225 07 08 09 10 11",
+          },
+          "mock-candidate-2": {
+            id: "mock-candidate-2",
+            prenom: "Serge",
+            nom: "Kouassi",
+            telephone: "+225 05 06 07 08 09",
+          },
+          "mock-candidate-3": {
+            id: "mock-candidate-3",
+            prenom: "Aminata",
+            nom: "Diallo",
+            telephone: "+225 01 02 03 04 05",
+          },
         });
         setFavorites([]);
         setLoading(false);
@@ -88,7 +122,9 @@ function CVtheque() {
       // Charger les candidats
       const { data: candidatesData } = await supabase
         .from("candidates")
-        .select("id, user_id, titre, ville, bio, diplome, competences, pretention_salariale, disponibilite")
+        .select(
+          "id, user_id, titre, ville, bio, diplome, competences, pretention_salariale, disponibilite",
+        )
         .order("updated_at", { ascending: false })
         .limit(200);
       const list = (candidatesData ?? []) as Candidate[];
@@ -105,12 +141,17 @@ function CVtheque() {
             diplome: "Master en Management des Ressources Humaines",
             competences: ["Recrutement", "Droit social", "SYSCOHADA", "Leadership"],
             pretention_salariale: "1 500 000 – 2 000 000 FCFA",
-            disponibilite: "Immédiate"
-          }
+            disponibilite: "Immédiate",
+          },
         ];
         setRows(mockCandidates);
         setProfiles({
-          "mock-candidate-1": { id: "mock-candidate-1", prenom: "Koffi", nom: "Anan", telephone: "+225 07 08 09 10 11" }
+          "mock-candidate-1": {
+            id: "mock-candidate-1",
+            prenom: "Koffi",
+            nom: "Anan",
+            telephone: "+225 07 08 09 10 11",
+          },
         });
       } else {
         setRows(list);
@@ -122,7 +163,7 @@ function CVtheque() {
         .from("favorites")
         .select("candidate_id")
         .eq("recruiter_id", user.id);
-      
+
       setFavorites((favsData ?? []).map((f) => f.candidate_id));
     } catch (err) {
       console.error(err);
@@ -137,12 +178,17 @@ function CVtheque() {
           diplome: "Master en Management des Ressources Humaines",
           competences: ["Recrutement", "Droit social", "SYSCOHADA", "Leadership"],
           pretention_salariale: "1 500 000 – 2 000 000 FCFA",
-          disponibilite: "Immédiate"
-        }
+          disponibilite: "Immédiate",
+        },
       ];
       setRows(mockCandidates);
       setProfiles({
-        "mock-candidate-1": { id: "mock-candidate-1", prenom: "Koffi", nom: "Anan", telephone: "+225 07 08 09 10 11" }
+        "mock-candidate-1": {
+          id: "mock-candidate-1",
+          prenom: "Koffi",
+          nom: "Anan",
+          telephone: "+225 07 08 09 10 11",
+        },
       });
     } finally {
       setLoading(false);
@@ -152,6 +198,26 @@ function CVtheque() {
   useEffect(() => {
     loadData();
   }, [user]);
+
+  async function handleDownloadCv(doc: { id: string; nom_fichier: string; storage_path: string }) {
+    if (doc.id.startsWith("cv-") || doc.storage_path.startsWith("mock/")) {
+      toast.success(`Téléchargement démo lancé : ${doc.nom_fichier}`);
+      return;
+    }
+    try {
+      const { data, error } = await supabase.storage
+        .from("cvs")
+        .createSignedUrl(doc.storage_path, 60);
+      if (error || !data) {
+        toast.error("Lien de téléchargement indisponible.");
+        return;
+      }
+      window.open(data.signedUrl, "_blank");
+    } catch (err) {
+      console.error(err);
+      toast.error("Erreur lors de la récupération du CV.");
+    }
+  }
 
   const toggleFavorite = async (candidateId: string, event: React.MouseEvent) => {
     event.stopPropagation();
@@ -177,7 +243,7 @@ function CVtheque() {
         .delete()
         .eq("recruiter_id", user.id)
         .eq("candidate_id", candidateId);
-      
+
       if (error) {
         toast.error("Impossible de retirer le candidat des favoris.");
       } else {
@@ -203,7 +269,8 @@ function CVtheque() {
       if (ville && !(c.ville ?? "").toLowerCase().includes(ville.toLowerCase())) return false;
       if (q) {
         const p = profiles[c.user_id];
-        const blob = `${c.titre ?? ""} ${c.bio ?? ""} ${(c.competences ?? []).join(" ")} ${p?.prenom ?? ""} ${p?.nom ?? ""}`.toLowerCase();
+        const blob =
+          `${c.titre ?? ""} ${c.bio ?? ""} ${(c.competences ?? []).join(" ")} ${p?.prenom ?? ""} ${p?.nom ?? ""}`.toLowerCase();
         if (!blob.includes(q.toLowerCase())) return false;
       }
       return true;
@@ -214,17 +281,25 @@ function CVtheque() {
 
   return (
     <>
-      <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">Recherche</div>
+      <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">
+        Recherche
+      </div>
       <h1 className="font-display italic text-5xl mb-10">CVthèque.</h1>
 
       <div className="grid sm:grid-cols-2 gap-3 mb-8">
-        <Input placeholder="Mots-clés (titre, compétence, nom…)" value={q} onChange={(e) => setQ(e.target.value)} />
+        <Input
+          placeholder="Mots-clés (titre, compétence, nom…)"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+        />
         <Input placeholder="Ville" value={ville} onChange={(e) => setVille(e.target.value)} />
       </div>
 
       {filtered.length === 0 ? (
         <div className="text-center py-24 border border-dashed border-border rounded-sm">
-          <p className="font-display italic text-2xl">Aucun profil ne correspond à votre recherche.</p>
+          <p className="font-display italic text-2xl">
+            Aucun profil ne correspond à votre recherche.
+          </p>
         </div>
       ) : (
         <div className="grid md:grid-cols-2 gap-4">
@@ -232,20 +307,51 @@ function CVtheque() {
             const name = displayName(profiles[c.user_id]);
             const isFav = favorites.includes(c.id);
             return (
-              <div 
-                key={c.id} 
+              <div
+                key={c.id}
                 className="relative group bg-card border border-border rounded-sm hover:border-primary transition-colors cursor-pointer"
                 onClick={() => setActive(c)}
               >
                 <div className="p-6 pr-12">
-                  <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2">{c.ville ?? "—"}</div>
+                  <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2">
+                    {c.ville ?? "—"}
+                  </div>
                   <div className="font-display italic text-2xl mb-1">{name}</div>
-                  <div className="text-sm text-muted-foreground mb-3">{c.titre ?? "Profil sans titre"}</div>
+                  <div className="text-sm text-muted-foreground mb-3">
+                    {c.titre ?? "Profil sans titre"}
+                  </div>
                   <div className="flex flex-wrap gap-1">
                     {(c.competences ?? []).slice(0, 6).map((s) => (
-                      <span key={s} className="text-xs px-2 py-1 bg-secondary rounded-sm">{s}</span>
+                      <span key={s} className="text-xs px-2 py-1 bg-secondary rounded-sm">
+                        {s}
+                      </span>
                     ))}
                   </div>
+                  {/* CV documents */}
+                  {cvs[c.id] && cvs[c.id].length > 0 && (
+                    <div className="mt-4 pt-3 border-t border-slate-100 flex flex-col gap-2">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground font-semibold">
+                        CV PDF
+                      </span>
+                      <div className="flex flex-col gap-1.5">
+                        {cvs[c.id].map((cvDoc) => (
+                          <button
+                            key={cvDoc.id}
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDownloadCv(cvDoc);
+                            }}
+                            className="flex items-center gap-2 text-xs text-primary hover:text-accent font-semibold transition-colors hover:underline text-left group/cv cursor-pointer"
+                          >
+                            <FileText className="h-3.5 w-3.5 text-muted-foreground group-hover/cv:text-accent transition-colors" />
+                            <span className="truncate max-w-[200px]">{cvDoc.nom_fichier}</span>
+                            <Download className="h-3 w-3 text-muted-foreground group-hover/cv:text-accent opacity-0 group-hover/cv:opacity-100 transition-all shrink-0 ml-auto" />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <button
                   type="button"
@@ -253,7 +359,9 @@ function CVtheque() {
                   className="absolute top-6 right-6 p-1.5 rounded-full hover:bg-secondary text-muted-foreground hover:text-accent transition-all"
                   title={isFav ? "Retirer des favoris" : "Ajouter aux favoris"}
                 >
-                  <Star className={`h-5 w-5 ${isFav ? "fill-accent text-accent" : "text-muted-foreground"}`} />
+                  <Star
+                    className={`h-5 w-5 ${isFav ? "fill-accent text-accent" : "text-muted-foreground"}`}
+                  />
                 </button>
               </div>
             );
@@ -273,9 +381,13 @@ function CVtheque() {
                   type="button"
                   onClick={(e) => toggleFavorite(active.id, e)}
                   className="absolute right-8 top-1 p-1.5 rounded-full hover:bg-secondary text-muted-foreground hover:text-accent transition-all"
-                  title={favorites.includes(active.id) ? "Retirer des favoris" : "Ajouter aux favoris"}
+                  title={
+                    favorites.includes(active.id) ? "Retirer des favoris" : "Ajouter aux favoris"
+                  }
                 >
-                  <Star className={`h-5 w-5 ${favorites.includes(active.id) ? "fill-accent text-accent" : "text-muted-foreground"}`} />
+                  <Star
+                    className={`h-5 w-5 ${favorites.includes(active.id) ? "fill-accent text-accent" : "text-muted-foreground"}`}
+                  />
                 </button>
               </DialogHeader>
               <div className="space-y-4 text-sm">
@@ -283,19 +395,83 @@ function CVtheque() {
                   {active.titre ?? "—"} {active.ville ? `· ${active.ville}` : ""}
                 </div>
                 {active.bio && <p className="whitespace-pre-line leading-relaxed">{active.bio}</p>}
-                {active.diplome && <div><span className="text-muted-foreground font-mono text-xs uppercase tracking-wider">Diplôme : </span>{active.diplome}</div>}
-                {active.disponibilite && <div><span className="text-muted-foreground font-mono text-xs uppercase tracking-wider">Disponibilité : </span>{active.disponibilite}</div>}
-                {active.pretention_salariale && <div><span className="text-muted-foreground font-mono text-xs uppercase tracking-wider">Prétention : </span>{active.pretention_salariale}</div>}
+                {active.diplome && (
+                  <div>
+                    <span className="text-muted-foreground font-mono text-xs uppercase tracking-wider">
+                      Diplôme :{" "}
+                    </span>
+                    {active.diplome}
+                  </div>
+                )}
+                {active.disponibilite && (
+                  <div>
+                    <span className="text-muted-foreground font-mono text-xs uppercase tracking-wider">
+                      Disponibilité :{" "}
+                    </span>
+                    {active.disponibilite}
+                  </div>
+                )}
+                {active.pretention_salariale && (
+                  <div>
+                    <span className="text-muted-foreground font-mono text-xs uppercase tracking-wider">
+                      Prétention :{" "}
+                    </span>
+                    {active.pretention_salariale}
+                  </div>
+                )}
                 {active.competences && active.competences.length > 0 && (
                   <div>
-                    <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2">Compétences</div>
+                    <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2">
+                      Compétences
+                    </div>
                     <div className="flex flex-wrap gap-2">
-                      {active.competences.map((s) => <span key={s} className="text-xs px-2 py-1 bg-secondary rounded-sm">{s}</span>)}
+                      {active.competences.map((s) => (
+                        <span key={s} className="text-xs px-2 py-1 bg-secondary rounded-sm">
+                          {s}
+                        </span>
+                      ))}
                     </div>
                   </div>
                 )}
+
+                {/* CV PDF Downloads in Modal */}
+                {cvs[active.id] && cvs[active.id].length > 0 && (
+                  <div className="border-t border-border pt-4">
+                    <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">
+                      Documents CV PDF
+                    </div>
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      {cvs[active.id].map((cvDoc) => (
+                        <div
+                          key={cvDoc.id}
+                          className="flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-xl hover:border-slate-200 transition-all"
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <FileText className="h-4 w-4 text-primary shrink-0" />
+                            <span
+                              className="text-xs font-semibold text-slate-800 truncate"
+                              title={cvDoc.nom_fichier}
+                            >
+                              {cvDoc.nom_fichier}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleDownloadCv(cvDoc)}
+                            className="p-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-primary hover:border-primary transition-all shadow-sm cursor-pointer"
+                            title="Télécharger le CV"
+                          >
+                            <Download className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <p className="text-xs text-muted-foreground border-t border-border pt-4">
-                  Pour échanger avec ce candidat, attendez qu'il postule à l'une de vos offres ou diffusez de nouvelles annonces ciblées.
+                  Pour échanger avec ce candidat, attendez qu'il postule à l'une de vos offres ou
+                  diffusez de nouvelles annonces ciblées.
                 </p>
               </div>
             </>

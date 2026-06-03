@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Briefcase, Search, Filter, Ban, Check, Calendar, Trash2 } from "lucide-react";
 import { OFFER_STATUS_LABELS } from "@/lib/recruiter";
+import { getMockJobOffers, getMockAdminCompanies, saveMockJobOffer } from "@/lib/mockData";
+import { ConfirmDialog } from "@/components/site/ConfirmDialog";
 
 export const Route = createFileRoute("/_authenticated/admin/offres")({
   component: AdminOffres,
@@ -26,17 +29,37 @@ type OfferRow = {
 };
 
 function AdminOffres() {
+  const { user } = useAuth();
+  const isMock = user?.id === "mock-admin-1";
+
   const [offers, setOffers] = useState<OfferRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [offerToDelete, setOfferToDelete] = useState<{ id: string; title: string } | null>(null);
   const [filterQuery, setFilterQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
   async function loadOffers() {
+    if (!user) return;
+    // ── Mock mode ──────────────────────────────
+    if (isMock) {
+      const mockOffers = getMockJobOffers();
+      const mockCompanies = getMockAdminCompanies();
+      const enriched = mockOffers.map((o) => ({
+        ...o,
+        company: { nom: mockCompanies.find((c) => c.id === o.company_id)?.nom ?? "Entreprise" },
+      })) as any as OfferRow[];
+      setOffers(enriched);
+      setLoading(false);
+      return;
+    }
+    // ── Supabase ───────────────────────────────
     try {
       setLoading(true);
       const { data, error } = await supabase
         .from("job_offers")
-        .select(`
+        .select(
+          `
           id,
           titre,
           description,
@@ -46,11 +69,12 @@ function AdminOffres() {
           statut,
           created_at,
           company:companies(nom)
-        `)
+        `,
+        )
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setOffers((data as any ?? []) as OfferRow[]);
+      setOffers(((data as any) ?? []) as OfferRow[]);
     } catch (err) {
       console.error(err);
       toast.error("Impossible de charger les offres.");
@@ -61,9 +85,20 @@ function AdminOffres() {
 
   useEffect(() => {
     loadOffers();
-  }, []);
+  }, [user]);
 
   async function handleStatusChange(id: string, newStatus: "publiee" | "suspendue" | "expiree") {
+    if (isMock) {
+      const all = getMockJobOffers();
+      const offer = all.find((o) => o.id === id);
+      if (offer) {
+        offer.statut = newStatus;
+        saveMockJobOffer(offer);
+      }
+      toast.success(`Statut mis à jour : ${OFFER_STATUS_LABELS[newStatus]?.label}.`);
+      loadOffers();
+      return;
+    }
     try {
       const { error } = await supabase
         .from("job_offers")
@@ -81,13 +116,20 @@ function AdminOffres() {
   }
 
   async function handleDeleteOffer(id: string, title: string) {
-    if (!confirm(`Supprimer définitivement l'offre "${title}" ? Cette action est irréversible.`)) return;
+    setOfferToDelete({ id, title });
+    setConfirmOpen(true);
+  }
 
+  async function executeDeleteOffer(id: string) {
+    if (isMock) {
+      const all = getMockJobOffers().filter((o) => o.id !== id);
+      localStorage.setItem("mock_job_offers", JSON.stringify(all));
+      toast.success("Offre d'emploi supprimée.");
+      loadOffers();
+      return;
+    }
     try {
-      const { error } = await supabase
-        .from("job_offers")
-        .delete()
-        .eq("id", id);
+      const { error } = await supabase.from("job_offers").delete().eq("id", id);
 
       if (error) throw error;
 
@@ -100,27 +142,94 @@ function AdminOffres() {
   }
 
   const filteredOffers = offers.filter((o) => {
-    const matchesSearch = o.titre.toLowerCase().includes(filterQuery.toLowerCase()) || 
-                          (o.company?.nom ?? "").toLowerCase().includes(filterQuery.toLowerCase());
+    const matchesSearch =
+      o.titre.toLowerCase().includes(filterQuery.toLowerCase()) ||
+      (o.company?.nom ?? "").toLowerCase().includes(filterQuery.toLowerCase());
     const matchesStatus = statusFilter === "all" || o.statut === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
-  if (loading) return <div className="text-sm font-mono text-muted-foreground">Chargement des offres…</div>;
+  if (loading)
+    return (
+      <div className="dash-empty">
+        <div className="w-12 h-12 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+        <p className="text-sm text-muted-foreground font-medium">Chargement des offres…</p>
+      </div>
+    );
+
+  const statusCounts = offers.reduce(
+    (acc, o) => {
+      acc[o.statut] = (acc[o.statut] ?? 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
 
   return (
     <>
-      <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3 font-semibold">
-        Modération
+      {/* ── Hero Header ─────────────────────────────────────────────────── */}
+      <div className="page-hero page-hero-admin animate-reveal">
+        <div
+          className="page-hero-blob"
+          style={{ width: 320, height: 320, background: "#9c1c1e", top: -120, right: -80 }}
+        />
+        <div
+          className="page-hero-blob"
+          style={{ width: 180, height: 180, background: "#1c305c", bottom: -60, left: 40 }}
+        />
+        <div className="hero-content">
+          <div className="dash-section-title" style={{ color: "rgba(255,255,255,0.6)" }}>
+            Modération
+          </div>
+          <h1 className="font-display font-black text-3xl sm:text-4xl text-white mb-3">
+            Modération des Offres
+          </h1>
+          <div className="flex flex-wrap gap-2 mt-2">
+            <span
+              className="stat-pill"
+              style={{
+                background: "rgba(255,255,255,0.15)",
+                borderColor: "rgba(255,255,255,0.2)",
+                color: "white",
+              }}
+            >
+              💼 {offers.length} offre{offers.length !== 1 ? "s" : ""}
+            </span>
+            {(statusCounts["publiee"] ?? 0) > 0 && (
+              <span
+                className="stat-pill"
+                style={{
+                  background: "rgba(16,185,129,0.25)",
+                  borderColor: "rgba(16,185,129,0.4)",
+                  color: "#6EE7B7",
+                }}
+              >
+                ✓ {statusCounts["publiee"]} publiée{statusCounts["publiee"] !== 1 ? "s" : ""}
+              </span>
+            )}
+            {(statusCounts["suspendue"] ?? 0) > 0 && (
+              <span
+                className="stat-pill"
+                style={{
+                  background: "rgba(251,191,36,0.25)",
+                  borderColor: "rgba(251,191,36,0.4)",
+                  color: "#FDE68A",
+                }}
+              >
+                ⏸ {statusCounts["suspendue"]} suspendue{statusCounts["suspendue"] !== 1 ? "s" : ""}
+              </span>
+            )}
+          </div>
+        </div>
       </div>
-      <h1 className="font-display italic text-5xl mb-10">Modération des Offres.</h1>
 
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-        <div className="flex flex-wrap gap-2 w-full md:w-auto">
-          <div className="flex items-center px-3 border border-border bg-card rounded-sm w-full sm:w-64 h-9">
-            <Search className="h-4 w-4 text-muted-foreground mr-2" />
+      {/* ── Filter bar ─────────────────────────────────────────────────── */}
+      <div className="bg-white border border-border/60 rounded-2xl shadow-sm p-4 mb-5">
+        <div className="flex flex-col md:flex-row gap-3 items-start md:items-center">
+          <div className="relative flex-1 min-w-0">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
             <Input
-              className="border-0 shadow-none focus-visible:ring-0 text-sm h-full"
+              className="pl-9 rounded-xl"
               placeholder="Rechercher titre, entreprise…"
               value={filterQuery}
               onChange={(e) => setFilterQuery(e.target.value)}
@@ -128,7 +237,7 @@ function AdminOffres() {
           </div>
 
           <select
-            className="bg-card border border-border rounded-sm px-3 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-primary h-9"
+            className="bg-slate-50 border border-border/60 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 shrink-0"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
@@ -142,111 +251,127 @@ function AdminOffres() {
       </div>
 
       {filteredOffers.length === 0 ? (
-        <Card className="text-center py-20 border border-dashed border-border bg-card">
-          <Briefcase className="h-10 w-10 text-muted-foreground mx-auto mb-4" />
-          <p className="font-display italic text-2xl">Aucune offre d'emploi trouvée.</p>
-          <p className="text-muted-foreground text-sm mt-1">
+        <div className="dash-empty">
+          <div className="w-20 h-20 rounded-3xl bg-primary/10 flex items-center justify-center text-4xl mb-2">
+            💼
+          </div>
+          <h3 className="font-display font-bold text-xl text-foreground">Aucune offre trouvée</h3>
+          <p className="text-sm text-muted-foreground">
             Les offres créées par les recruteurs apparaîtront ici.
           </p>
-        </Card>
+        </div>
       ) : (
-        <div className="border border-border rounded-sm bg-card overflow-hidden">
+        <div className="bg-white border border-border/60 rounded-2xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm font-sans border-collapse">
+            <table className="dash-table">
               <thead>
-                <tr className="border-b border-border font-mono text-xs uppercase tracking-widest text-muted-foreground bg-secondary/20">
-                  <th className="py-4 px-6">Offre / Entreprise</th>
-                  <th className="py-4 px-6">Contrat / Ville</th>
-                  <th className="py-4 px-6">Date de création</th>
-                  <th className="py-4 px-6">Statut</th>
-                  <th className="py-4 px-6 text-right">Actions</th>
+                <tr>
+                  <th>Offre / Entreprise</th>
+                  <th>Contrat / Ville</th>
+                  <th>Date de création</th>
+                  <th>Statut</th>
+                  <th style={{ textAlign: "right" }}>Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border/50">
+              <tbody>
                 {filteredOffers.map((o) => {
-                  const s = OFFER_STATUS_LABELS[o.statut] ?? { label: o.statut, tone: "bg-muted text-muted-foreground" };
+                  const s = OFFER_STATUS_LABELS[o.statut] ?? {
+                    label: o.statut,
+                    tone: "bg-muted text-muted-foreground",
+                  };
+                  const statusDot: Record<string, string> = {
+                    publiee: "bg-emerald-500",
+                    suspendue: "bg-amber-400",
+                    brouillon: "bg-slate-400",
+                    expiree: "bg-red-400",
+                  };
                   return (
-                    <tr key={o.id} className="hover:bg-secondary/5">
-                      <td className="py-4 px-6">
-                        <div>
-                          <div className="font-semibold text-base">{o.titre}</div>
-                          <div className="text-xs text-primary font-mono font-semibold uppercase tracking-wider">
-                            {o.company?.nom ?? "Sans entreprise"}
+                    <tr key={o.id}>
+                      <td>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`w-2 h-2 rounded-full shrink-0 ${statusDot[o.statut] ?? "bg-gray-400"}`}
+                          />
+                          <div>
+                            <div className="font-bold text-sm text-foreground">{o.titre}</div>
+                            <div className="text-xs text-primary font-bold mt-0.5">
+                              {o.company?.nom ?? "Sans entreprise"}
+                            </div>
                           </div>
                         </div>
                       </td>
-                      <td className="py-4 px-6">
-                        <div className="flex flex-col">
-                          <span className="text-xs font-mono font-semibold">{o.contrat}</span>
-                          <span className="text-xs text-muted-foreground">{o.localisation ?? "—"}</span>
+                      <td>
+                        <div className="flex flex-col gap-0.5">
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-mono font-bold uppercase w-fit">
+                            {o.contrat}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {o.localisation ?? "—"}
+                          </span>
                         </div>
                       </td>
-                      <td className="py-4 px-6 text-xs font-mono text-muted-foreground">
+                      <td className="text-xs font-mono text-muted-foreground">
                         {new Date(o.created_at).toLocaleDateString("fr-FR")}
                       </td>
-                      <td className="py-4 px-6">
-                        <span className={`text-xs font-mono uppercase tracking-wider px-2 py-0.5 rounded-sm font-semibold ${s.tone}`}>
-                          {s.label}
-                        </span>
+                      <td>
+                        <span className={`badge-modern ${s.tone}`}>{s.label}</span>
                       </td>
-                      <td className="py-4 px-6 text-right flex justify-end gap-1">
-                        {o.statut === "publiee" && (
+                      <td style={{ textAlign: "right" }}>
+                        <div className="flex justify-end gap-1">
+                          {o.statut === "publiee" && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-8 px-2 text-amber-600 hover:bg-amber-50 rounded-lg"
+                              onClick={() => handleStatusChange(o.id, "suspendue")}
+                              title="Suspendre l'offre"
+                            >
+                              <Ban className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {o.statut === "suspendue" && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-8 px-2 text-emerald-600 hover:bg-emerald-50 rounded-lg"
+                              onClick={() => handleStatusChange(o.id, "publiee")}
+                              title="Réactiver l'offre"
+                            >
+                              <Check className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {o.statut !== "expiree" && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-8 px-2 text-muted-foreground hover:bg-slate-100 rounded-lg"
+                              onClick={() => handleStatusChange(o.id, "expiree")}
+                              title="Expirer l'offre"
+                            >
+                              <Calendar className="h-4 w-4" />
+                            </Button>
+                          )}
+                          {o.statut === "expiree" && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-8 px-2 text-emerald-600 hover:bg-emerald-50 rounded-lg"
+                              onClick={() => handleStatusChange(o.id, "publiee")}
+                              title="Réactiver l'offre"
+                            >
+                              <Check className="h-4 w-4" />
+                            </Button>
+                          )}
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-8 text-amber-700 hover:bg-amber-50 hover:text-amber-800 rounded-sm font-mono text-xs uppercase"
-                            onClick={() => handleStatusChange(o.id, "suspendue")}
-                            title="Suspendre l'offre"
+                            className="h-8 px-2 text-red-500 hover:bg-red-50 rounded-lg"
+                            onClick={() => handleDeleteOffer(o.id, o.titre)}
+                            title="Supprimer l'offre"
                           >
-                            <Ban className="h-4 w-4 mr-1" /> Suspendre
+                            <Trash2 className="h-4 w-4" />
                           </Button>
-                        )}
-
-                        {o.statut === "suspendue" && (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-8 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 rounded-sm font-mono text-xs uppercase"
-                            onClick={() => handleStatusChange(o.id, "publiee")}
-                            title="Réactiver l'offre"
-                          >
-                            <Check className="h-4 w-4 mr-1" /> Publier
-                          </Button>
-                        )}
-
-                        {o.statut !== "expiree" && (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-8 text-muted-foreground hover:bg-secondary rounded-sm font-mono text-xs uppercase"
-                            onClick={() => handleStatusChange(o.id, "expiree")}
-                            title="Expirer l'offre"
-                          >
-                            <Calendar className="h-4 w-4 mr-1" /> Expirer
-                          </Button>
-                        )}
-
-                        {o.statut === "expiree" && (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-8 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 rounded-sm font-mono text-xs uppercase"
-                            onClick={() => handleStatusChange(o.id, "publiee")}
-                            title="Réactiver l'offre"
-                          >
-                            <Check className="h-4 w-4 mr-1" /> Publier
-                          </Button>
-                        )}
-
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-8 text-destructive hover:bg-destructive/10 rounded-sm font-mono text-xs uppercase"
-                          onClick={() => handleDeleteOffer(o.id, o.titre)}
-                          title="Supprimer l'offre"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -256,6 +381,24 @@ function AdminOffres() {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={confirmOpen}
+        onClose={() => {
+          setConfirmOpen(false);
+          setOfferToDelete(null);
+        }}
+        onConfirm={() => {
+          if (offerToDelete) {
+            executeDeleteOffer(offerToDelete.id);
+          }
+        }}
+        title="Supprimer l'offre"
+        description={`Êtes-vous sûr de vouloir supprimer définitivement l'offre "${offerToDelete?.title}" ? Cette action est irréversible.`}
+        confirmText="Supprimer"
+        cancelText="Annuler"
+        variant="destructive"
+      />
     </>
   );
 }

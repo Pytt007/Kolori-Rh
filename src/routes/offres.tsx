@@ -9,6 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Briefcase, Search } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const searchSchema = z.object({
   q: z.string().optional().catch(""),
@@ -32,9 +39,15 @@ export const Route = createFileRoute("/offres")({
   head: () => ({
     meta: [
       { title: "Offres d'emploi — Kolori RH" },
-      { name: "description", content: "Parcourez les offres d'emploi publiées par les entreprises sur Kolori RH." },
+      {
+        name: "description",
+        content: "Parcourez les offres d'emploi publiées par les entreprises sur Kolori RH.",
+      },
       { property: "og:title", content: "Offres d'emploi — Kolori RH" },
-      { property: "og:description", content: "Parcourez toutes les offres publiées sur Kolori RH." },
+      {
+        property: "og:description",
+        content: "Parcourez toutes les offres publiées sur Kolori RH.",
+      },
     ],
   }),
   component: OffresPage,
@@ -53,7 +66,9 @@ function OffresPage() {
       setLoading(true);
       let query = supabase
         .from("job_offers")
-        .select("id, titre, description, contrat, localisation, teletravail, publiee_le, company_id")
+        .select(
+          "id, titre, description, contrat, localisation, teletravail, publiee_le, company_id",
+        )
         .eq("statut", "publiee")
         .order("publiee_le", { ascending: false, nullsFirst: false })
         .limit(50);
@@ -69,14 +84,18 @@ function OffresPage() {
         let filtered = [...getMockJobOffers()];
         if (search.q) {
           const qLower = search.q.toLowerCase();
-          filtered = filtered.filter(o => o.titre.toLowerCase().includes(qLower) || o.description.toLowerCase().includes(qLower));
+          filtered = filtered.filter(
+            (o) =>
+              o.titre.toLowerCase().includes(qLower) ||
+              o.description.toLowerCase().includes(qLower),
+          );
         }
         if (search.lieu) {
           const lieuLower = search.lieu.toLowerCase();
-          filtered = filtered.filter(o => o.localisation?.toLowerCase().includes(lieuLower));
+          filtered = filtered.filter((o) => o.localisation?.toLowerCase().includes(lieuLower));
         }
         if (search.contrat) {
-          filtered = filtered.filter(o => o.contrat === search.contrat);
+          filtered = filtered.filter((o) => o.contrat === search.contrat);
         }
         setOffers(filtered as any);
       }
@@ -92,11 +111,13 @@ function OffresPage() {
         <section className="bg-primary text-primary-foreground border-b border-border/10 py-20 relative overflow-hidden">
           <div className="absolute right-0 bottom-0 w-96 h-96 bg-white/5 rounded-full -mr-32 -mb-32 pointer-events-none" />
           <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
-            <span className="text-xs uppercase tracking-widest text-white/80 font-bold block mb-3">RECHERCHE</span>
+            <span className="text-xs uppercase tracking-widest text-white/80 font-bold block mb-3">
+              RECHERCHE
+            </span>
             <h1 className="font-display font-black text-4xl md:text-5xl tracking-tight text-white mb-8">
               Trouvez un emploi que vous allez adorer
             </h1>
-            
+
             <form
               className="max-w-4xl mx-auto bg-white p-3 rounded-2xl md:rounded-full border border-border shadow-xl grid grid-cols-1 md:grid-cols-12 gap-3 items-center text-black"
               onSubmit={(e) => {
@@ -111,43 +132,80 @@ function OffresPage() {
             >
               <div className="md:col-span-4 flex items-center px-4 py-2 border-b md:border-b-0 md:border-r border-border">
                 <Search className="h-4.5 w-4.5 text-muted-foreground mr-2 shrink-0" />
-                <input 
-                  type="text" 
-                  placeholder="Poste, mots-clés…" 
-                  className="w-full bg-transparent text-sm focus:outline-none placeholder-muted-foreground" 
-                  value={q} 
-                  onChange={(e) => setQ(e.target.value)} 
-                />
-              </div>
-              
-              <div className="md:col-span-4 flex items-center px-4 py-2 border-b md:border-b-0 md:border-r border-border">
-                <MapPin className="h-4.5 w-4.5 text-muted-foreground mr-2 shrink-0" />
-                <input 
-                  type="text" 
-                  placeholder="Ville ou Télétravail..." 
-                  className="w-full bg-transparent text-sm focus:outline-none placeholder-muted-foreground" 
-                  value={lieu} 
-                  onChange={(e) => setLieu(e.target.value)} 
+                <input
+                  type="text"
+                  placeholder="Poste, mots-clés…"
+                  className="w-full bg-transparent text-sm focus:outline-none placeholder-muted-foreground"
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
                 />
               </div>
 
-              <div className="md:col-span-2 px-4 py-2">
-                <select 
-                  className="w-full bg-transparent text-sm font-semibold focus:outline-none cursor-pointer" 
-                  value={contrat} 
-                  onChange={(e) => setContrat(e.target.value)}
+              <div className="md:col-span-4 flex items-center px-4 py-2 border-b md:border-b-0 md:border-r border-border">
+                <MapPin className="h-4.5 w-4.5 text-muted-foreground mr-2 shrink-0" />
+                <input
+                  type="text"
+                  placeholder="Ville ou Télétravail..."
+                  className="w-full bg-transparent text-sm focus:outline-none placeholder-muted-foreground"
+                  value={lieu}
+                  onChange={(e) => setLieu(e.target.value)}
+                />
+              </div>
+
+              <div className="md:col-span-2 px-4 py-2 border-b md:border-b-0 md:border-r border-border flex items-center">
+                <Select
+                  value={contrat || "all"}
+                  onValueChange={(val) => setContrat(val === "all" ? "" : val)}
                 >
-                  <option value="">Tous Contrats</option>
-                  <option value="cdi">CDI</option>
-                  <option value="cdd">CDD</option>
-                  <option value="stage">Stage</option>
-                  <option value="alternance">Alternance</option>
-                  <option value="freelance">Freelance</option>
-                </select>
+                  <SelectTrigger className="border-none shadow-none focus:ring-0 focus:ring-offset-0 bg-transparent text-sm font-semibold p-0 w-full cursor-pointer h-auto text-black flex items-center justify-between">
+                    <SelectValue placeholder="Tous Contrats" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border border-border rounded-xl shadow-lg">
+                    <SelectItem
+                      value="all"
+                      className="cursor-pointer hover:bg-muted py-2 px-3 rounded-lg text-sm text-black"
+                    >
+                      Tous Contrats
+                    </SelectItem>
+                    <SelectItem
+                      value="cdi"
+                      className="cursor-pointer hover:bg-muted py-2 px-3 rounded-lg text-sm text-black"
+                    >
+                      CDI
+                    </SelectItem>
+                    <SelectItem
+                      value="cdd"
+                      className="cursor-pointer hover:bg-muted py-2 px-3 rounded-lg text-sm text-black"
+                    >
+                      CDD
+                    </SelectItem>
+                    <SelectItem
+                      value="stage"
+                      className="cursor-pointer hover:bg-muted py-2 px-3 rounded-lg text-sm text-black"
+                    >
+                      Stage
+                    </SelectItem>
+                    <SelectItem
+                      value="alternance"
+                      className="cursor-pointer hover:bg-muted py-2 px-3 rounded-lg text-sm text-black"
+                    >
+                      Alternance
+                    </SelectItem>
+                    <SelectItem
+                      value="freelance"
+                      className="cursor-pointer hover:bg-muted py-2 px-3 rounded-lg text-sm text-black"
+                    >
+                      Freelance
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="md:col-span-2">
-                <Button type="submit" className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-full hover:brightness-110 shadow-md">
+                <Button
+                  type="submit"
+                  className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-full hover:brightness-110 shadow-md"
+                >
                   Rechercher
                 </Button>
               </div>
@@ -159,9 +217,12 @@ function OffresPage() {
         <section className="max-w-7xl mx-auto px-6 py-12">
           <div className="flex justify-between items-center mb-8 pb-4 border-b border-border/60">
             <div className="font-semibold text-sm text-muted-foreground">
-              {loading ? "Recherche en cours..." : (
+              {loading ? (
+                "Recherche en cours..."
+              ) : (
                 <span>
-                  <strong className="text-foreground">{offers?.length ?? 0}</strong> emploi(s) trouvé(s) pour vous
+                  <strong className="text-foreground">{offers?.length ?? 0}</strong> emploi(s)
+                  trouvé(s) pour vous
                 </span>
               )}
             </div>
@@ -169,8 +230,12 @@ function OffresPage() {
 
           {!loading && offers && offers.length === 0 && (
             <div className="text-center py-20 bg-muted/20 border border-dashed border-border rounded-3xl">
-              <p className="font-display font-bold text-2xl mb-2 text-foreground">Aucune offre ne correspond à vos critères.</p>
-              <p className="text-muted-foreground text-sm">Modifiez vos mots-clés ou le lieu de recherche pour voir d'autres résultats.</p>
+              <p className="font-display font-bold text-2xl mb-2 text-foreground">
+                Aucune offre ne correspond à vos critères.
+              </p>
+              <p className="text-muted-foreground text-sm">
+                Modifiez vos mots-clés ou le lieu de recherche pour voir d'autres résultats.
+              </p>
             </div>
           )}
 
@@ -178,7 +243,9 @@ function OffresPage() {
             {offers?.map((o) => {
               const pubDate = o.publiee_le ? new Date(o.publiee_le) : new Date();
               const day = pubDate.getDate();
-              const month = pubDate.toLocaleDateString("fr-FR", { month: "short" }).replace(".", "");
+              const month = pubDate
+                .toLocaleDateString("fr-FR", { month: "short" })
+                .replace(".", "");
 
               return (
                 <Link
@@ -193,18 +260,20 @@ function OffresPage() {
                       <span className="px-3 py-1 bg-secondary text-secondary-foreground text-[10px] font-bold uppercase rounded-full tracking-wider border border-border/50">
                         {o.contrat}
                       </span>
-                      
+
                       {/* Floating Date Badge */}
                       <div className="flex flex-col items-center justify-center bg-primary/5 text-primary border border-primary/10 rounded-xl px-2.5 py-1.5 min-w-[45px] text-center shrink-0">
                         <span className="text-sm font-black leading-none">{day}</span>
-                        <span className="text-[9px] uppercase font-bold leading-none mt-1">{month}</span>
+                        <span className="text-[9px] uppercase font-bold leading-none mt-1">
+                          {month}
+                        </span>
                       </div>
                     </div>
 
                     <h2 className="font-display font-bold text-xl text-primary mb-3 leading-tight group-hover:text-accent transition-colors">
                       {o.titre}
                     </h2>
-                    
+
                     <p className="text-muted-foreground text-xs leading-relaxed line-clamp-3 mb-6">
                       {o.description}
                     </p>

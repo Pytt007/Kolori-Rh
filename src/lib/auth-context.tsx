@@ -43,8 +43,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Check mock authentication in localStorage first
-    const mockUserStr = typeof window !== "undefined" ? localStorage.getItem("mock_auth_user") : null;
-    const mockRolesStr = typeof window !== "undefined" ? localStorage.getItem("mock_auth_roles") : null;
+    const mockUserStr =
+      typeof window !== "undefined" ? localStorage.getItem("mock_auth_user") : null;
+    const mockRolesStr =
+      typeof window !== "undefined" ? localStorage.getItem("mock_auth_roles") : null;
     if (mockUserStr && mockRolesStr) {
       const mockUser = JSON.parse(mockUserStr);
       setUser(mockUser);
@@ -60,7 +62,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, newSession) => {
       // If we are in mock mode, ignore
       if (typeof window !== "undefined" && localStorage.getItem("mock_auth_user")) return;
 
@@ -82,7 +86,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(data.session);
       setUser(data.session?.user ?? null);
       if (data.session?.user) {
-        fetchRoles(data.session.user.id).then(setRoles).finally(() => setLoading(false));
+        fetchRoles(data.session.user.id)
+          .then(setRoles)
+          .finally(() => setLoading(false));
       } else {
         setLoading(false);
       }

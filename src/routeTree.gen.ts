@@ -23,8 +23,8 @@ import { Route as AProposRouteImport } from './routes/a-propos'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ServicesServiceIdRouteImport } from './routes/services.$serviceId'
-import { Route as OffresOfferIdRouteImport } from './routes/offres.$offerId'
-import { Route as EntreprisesCompanyIdRouteImport } from './routes/entreprises.$companyId'
+import { Route as OffresOfferIdRouteImport } from './routes/offres_.$offerId'
+import { Route as EntreprisesCompanyIdRouteImport } from './routes/entreprises_.$companyId'
 import { Route as AuthenticatedRecruteurRouteImport } from './routes/_authenticated/recruteur'
 import { Route as AuthenticatedCandidatRouteImport } from './routes/_authenticated/candidat'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -32,13 +32,11 @@ import { Route as AuthenticatedRecruteurIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedCandidatIndexRouteImport } from './routes/_authenticated/candidat.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedRecruteurOffresRouteImport } from './routes/_authenticated/recruteur.offres'
-import { Route as AuthenticatedRecruteurMessagesRouteImport } from './routes/_authenticated/recruteur.messages'
 import { Route as AuthenticatedRecruteurFavorisRouteImport } from './routes/_authenticated/recruteur.favoris'
 import { Route as AuthenticatedRecruteurEntrepriseRouteImport } from './routes/_authenticated/recruteur.entreprise'
 import { Route as AuthenticatedRecruteurCvthequeRouteImport } from './routes/_authenticated/recruteur.cvtheque'
 import { Route as AuthenticatedRecruteurCandidaturesRouteImport } from './routes/_authenticated/recruteur.candidatures'
 import { Route as AuthenticatedCandidatProfilRouteImport } from './routes/_authenticated/candidat.profil'
-import { Route as AuthenticatedCandidatMessagesRouteImport } from './routes/_authenticated/candidat.messages'
 import { Route as AuthenticatedCandidatCvRouteImport } from './routes/_authenticated/candidat.cv'
 import { Route as AuthenticatedCandidatCandidaturesRouteImport } from './routes/_authenticated/candidat.candidatures'
 import { Route as AuthenticatedAdminUtilisateursRouteImport } from './routes/_authenticated/admin.utilisateurs'
@@ -118,14 +116,14 @@ const ServicesServiceIdRoute = ServicesServiceIdRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const OffresOfferIdRoute = OffresOfferIdRouteImport.update({
-  id: '/$offerId',
-  path: '/$offerId',
-  getParentRoute: () => OffresRoute,
+  id: '/offres_/$offerId',
+  path: '/offres/$offerId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const EntreprisesCompanyIdRoute = EntreprisesCompanyIdRouteImport.update({
-  id: '/$companyId',
-  path: '/$companyId',
-  getParentRoute: () => EntreprisesRoute,
+  id: '/entreprises_/$companyId',
+  path: '/entreprises/$companyId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRecruteurRoute = AuthenticatedRecruteurRouteImport.update({
   id: '/recruteur',
@@ -165,12 +163,6 @@ const AuthenticatedRecruteurOffresRoute =
     path: '/offres',
     getParentRoute: () => AuthenticatedRecruteurRoute,
   } as any)
-const AuthenticatedRecruteurMessagesRoute =
-  AuthenticatedRecruteurMessagesRouteImport.update({
-    id: '/messages',
-    path: '/messages',
-    getParentRoute: () => AuthenticatedRecruteurRoute,
-  } as any)
 const AuthenticatedRecruteurFavorisRoute =
   AuthenticatedRecruteurFavorisRouteImport.update({
     id: '/favoris',
@@ -199,12 +191,6 @@ const AuthenticatedCandidatProfilRoute =
   AuthenticatedCandidatProfilRouteImport.update({
     id: '/profil',
     path: '/profil',
-    getParentRoute: () => AuthenticatedCandidatRoute,
-  } as any)
-const AuthenticatedCandidatMessagesRoute =
-  AuthenticatedCandidatMessagesRouteImport.update({
-    id: '/messages',
-    path: '/messages',
     getParentRoute: () => AuthenticatedCandidatRoute,
   } as any)
 const AuthenticatedCandidatCvRoute = AuthenticatedCandidatCvRouteImport.update({
@@ -261,12 +247,12 @@ export interface FileRoutesByFullPath {
   '/confidentialite': typeof ConfidentialiteRoute
   '/connexion': typeof ConnexionRoute
   '/contact': typeof ContactRoute
-  '/entreprises': typeof EntreprisesRouteWithChildren
+  '/entreprises': typeof EntreprisesRoute
   '/faq': typeof FaqRoute
   '/inscription': typeof InscriptionRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
-  '/offres': typeof OffresRouteWithChildren
+  '/offres': typeof OffresRoute
   '/reinitialiser-mot-de-passe': typeof ReinitialiserMotDePasseRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/candidat': typeof AuthenticatedCandidatRouteWithChildren
@@ -280,13 +266,11 @@ export interface FileRoutesByFullPath {
   '/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
   '/candidat/candidatures': typeof AuthenticatedCandidatCandidaturesRoute
   '/candidat/cv': typeof AuthenticatedCandidatCvRoute
-  '/candidat/messages': typeof AuthenticatedCandidatMessagesRoute
   '/candidat/profil': typeof AuthenticatedCandidatProfilRoute
   '/recruteur/candidatures': typeof AuthenticatedRecruteurCandidaturesRoute
   '/recruteur/cvtheque': typeof AuthenticatedRecruteurCvthequeRoute
   '/recruteur/entreprise': typeof AuthenticatedRecruteurEntrepriseRoute
   '/recruteur/favoris': typeof AuthenticatedRecruteurFavorisRoute
-  '/recruteur/messages': typeof AuthenticatedRecruteurMessagesRoute
   '/recruteur/offres': typeof AuthenticatedRecruteurOffresRouteWithChildren
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/candidat/': typeof AuthenticatedCandidatIndexRoute
@@ -300,12 +284,12 @@ export interface FileRoutesByTo {
   '/confidentialite': typeof ConfidentialiteRoute
   '/connexion': typeof ConnexionRoute
   '/contact': typeof ContactRoute
-  '/entreprises': typeof EntreprisesRouteWithChildren
+  '/entreprises': typeof EntreprisesRoute
   '/faq': typeof FaqRoute
   '/inscription': typeof InscriptionRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
-  '/offres': typeof OffresRouteWithChildren
+  '/offres': typeof OffresRoute
   '/reinitialiser-mot-de-passe': typeof ReinitialiserMotDePasseRoute
   '/entreprises/$companyId': typeof EntreprisesCompanyIdRoute
   '/offres/$offerId': typeof OffresOfferIdRoute
@@ -316,13 +300,11 @@ export interface FileRoutesByTo {
   '/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
   '/candidat/candidatures': typeof AuthenticatedCandidatCandidaturesRoute
   '/candidat/cv': typeof AuthenticatedCandidatCvRoute
-  '/candidat/messages': typeof AuthenticatedCandidatMessagesRoute
   '/candidat/profil': typeof AuthenticatedCandidatProfilRoute
   '/recruteur/candidatures': typeof AuthenticatedRecruteurCandidaturesRoute
   '/recruteur/cvtheque': typeof AuthenticatedRecruteurCvthequeRoute
   '/recruteur/entreprise': typeof AuthenticatedRecruteurEntrepriseRoute
   '/recruteur/favoris': typeof AuthenticatedRecruteurFavorisRoute
-  '/recruteur/messages': typeof AuthenticatedRecruteurMessagesRoute
   '/recruteur/offres': typeof AuthenticatedRecruteurOffresRouteWithChildren
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/candidat': typeof AuthenticatedCandidatIndexRoute
@@ -338,18 +320,18 @@ export interface FileRoutesById {
   '/confidentialite': typeof ConfidentialiteRoute
   '/connexion': typeof ConnexionRoute
   '/contact': typeof ContactRoute
-  '/entreprises': typeof EntreprisesRouteWithChildren
+  '/entreprises': typeof EntreprisesRoute
   '/faq': typeof FaqRoute
   '/inscription': typeof InscriptionRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
-  '/offres': typeof OffresRouteWithChildren
+  '/offres': typeof OffresRoute
   '/reinitialiser-mot-de-passe': typeof ReinitialiserMotDePasseRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/candidat': typeof AuthenticatedCandidatRouteWithChildren
   '/_authenticated/recruteur': typeof AuthenticatedRecruteurRouteWithChildren
-  '/entreprises/$companyId': typeof EntreprisesCompanyIdRoute
-  '/offres/$offerId': typeof OffresOfferIdRoute
+  '/entreprises_/$companyId': typeof EntreprisesCompanyIdRoute
+  '/offres_/$offerId': typeof OffresOfferIdRoute
   '/services/$serviceId': typeof ServicesServiceIdRoute
   '/_authenticated/admin/entreprises': typeof AuthenticatedAdminEntreprisesRoute
   '/_authenticated/admin/offres': typeof AuthenticatedAdminOffresRoute
@@ -357,13 +339,11 @@ export interface FileRoutesById {
   '/_authenticated/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
   '/_authenticated/candidat/candidatures': typeof AuthenticatedCandidatCandidaturesRoute
   '/_authenticated/candidat/cv': typeof AuthenticatedCandidatCvRoute
-  '/_authenticated/candidat/messages': typeof AuthenticatedCandidatMessagesRoute
   '/_authenticated/candidat/profil': typeof AuthenticatedCandidatProfilRoute
   '/_authenticated/recruteur/candidatures': typeof AuthenticatedRecruteurCandidaturesRoute
   '/_authenticated/recruteur/cvtheque': typeof AuthenticatedRecruteurCvthequeRoute
   '/_authenticated/recruteur/entreprise': typeof AuthenticatedRecruteurEntrepriseRoute
   '/_authenticated/recruteur/favoris': typeof AuthenticatedRecruteurFavorisRoute
-  '/_authenticated/recruteur/messages': typeof AuthenticatedRecruteurMessagesRoute
   '/_authenticated/recruteur/offres': typeof AuthenticatedRecruteurOffresRouteWithChildren
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/candidat/': typeof AuthenticatedCandidatIndexRoute
@@ -398,13 +378,11 @@ export interface FileRouteTypes {
     | '/admin/utilisateurs'
     | '/candidat/candidatures'
     | '/candidat/cv'
-    | '/candidat/messages'
     | '/candidat/profil'
     | '/recruteur/candidatures'
     | '/recruteur/cvtheque'
     | '/recruteur/entreprise'
     | '/recruteur/favoris'
-    | '/recruteur/messages'
     | '/recruteur/offres'
     | '/admin/'
     | '/candidat/'
@@ -434,13 +412,11 @@ export interface FileRouteTypes {
     | '/admin/utilisateurs'
     | '/candidat/candidatures'
     | '/candidat/cv'
-    | '/candidat/messages'
     | '/candidat/profil'
     | '/recruteur/candidatures'
     | '/recruteur/cvtheque'
     | '/recruteur/entreprise'
     | '/recruteur/favoris'
-    | '/recruteur/messages'
     | '/recruteur/offres'
     | '/admin'
     | '/candidat'
@@ -465,8 +441,8 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/candidat'
     | '/_authenticated/recruteur'
-    | '/entreprises/$companyId'
-    | '/offres/$offerId'
+    | '/entreprises_/$companyId'
+    | '/offres_/$offerId'
     | '/services/$serviceId'
     | '/_authenticated/admin/entreprises'
     | '/_authenticated/admin/offres'
@@ -474,13 +450,11 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/utilisateurs'
     | '/_authenticated/candidat/candidatures'
     | '/_authenticated/candidat/cv'
-    | '/_authenticated/candidat/messages'
     | '/_authenticated/candidat/profil'
     | '/_authenticated/recruteur/candidatures'
     | '/_authenticated/recruteur/cvtheque'
     | '/_authenticated/recruteur/entreprise'
     | '/_authenticated/recruteur/favoris'
-    | '/_authenticated/recruteur/messages'
     | '/_authenticated/recruteur/offres'
     | '/_authenticated/admin/'
     | '/_authenticated/candidat/'
@@ -496,13 +470,15 @@ export interface RootRouteChildren {
   ConfidentialiteRoute: typeof ConfidentialiteRoute
   ConnexionRoute: typeof ConnexionRoute
   ContactRoute: typeof ContactRoute
-  EntreprisesRoute: typeof EntreprisesRouteWithChildren
+  EntreprisesRoute: typeof EntreprisesRoute
   FaqRoute: typeof FaqRoute
   InscriptionRoute: typeof InscriptionRoute
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   MotDePasseOublieRoute: typeof MotDePasseOublieRoute
-  OffresRoute: typeof OffresRouteWithChildren
+  OffresRoute: typeof OffresRoute
   ReinitialiserMotDePasseRoute: typeof ReinitialiserMotDePasseRoute
+  EntreprisesCompanyIdRoute: typeof EntreprisesCompanyIdRoute
+  OffresOfferIdRoute: typeof OffresOfferIdRoute
   ServicesServiceIdRoute: typeof ServicesServiceIdRoute
 }
 
@@ -606,19 +582,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesServiceIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/offres/$offerId': {
-      id: '/offres/$offerId'
-      path: '/$offerId'
+    '/offres_/$offerId': {
+      id: '/offres_/$offerId'
+      path: '/offres/$offerId'
       fullPath: '/offres/$offerId'
       preLoaderRoute: typeof OffresOfferIdRouteImport
-      parentRoute: typeof OffresRoute
+      parentRoute: typeof rootRouteImport
     }
-    '/entreprises/$companyId': {
-      id: '/entreprises/$companyId'
-      path: '/$companyId'
+    '/entreprises_/$companyId': {
+      id: '/entreprises_/$companyId'
+      path: '/entreprises/$companyId'
       fullPath: '/entreprises/$companyId'
       preLoaderRoute: typeof EntreprisesCompanyIdRouteImport
-      parentRoute: typeof EntreprisesRoute
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/recruteur': {
       id: '/_authenticated/recruteur'
@@ -669,13 +645,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRecruteurOffresRouteImport
       parentRoute: typeof AuthenticatedRecruteurRoute
     }
-    '/_authenticated/recruteur/messages': {
-      id: '/_authenticated/recruteur/messages'
-      path: '/messages'
-      fullPath: '/recruteur/messages'
-      preLoaderRoute: typeof AuthenticatedRecruteurMessagesRouteImport
-      parentRoute: typeof AuthenticatedRecruteurRoute
-    }
     '/_authenticated/recruteur/favoris': {
       id: '/_authenticated/recruteur/favoris'
       path: '/favoris'
@@ -709,13 +678,6 @@ declare module '@tanstack/react-router' {
       path: '/profil'
       fullPath: '/candidat/profil'
       preLoaderRoute: typeof AuthenticatedCandidatProfilRouteImport
-      parentRoute: typeof AuthenticatedCandidatRoute
-    }
-    '/_authenticated/candidat/messages': {
-      id: '/_authenticated/candidat/messages'
-      path: '/messages'
-      fullPath: '/candidat/messages'
-      preLoaderRoute: typeof AuthenticatedCandidatMessagesRouteImport
       parentRoute: typeof AuthenticatedCandidatRoute
     }
     '/_authenticated/candidat/cv': {
@@ -799,7 +761,6 @@ const AuthenticatedAdminRouteWithChildren =
 interface AuthenticatedCandidatRouteChildren {
   AuthenticatedCandidatCandidaturesRoute: typeof AuthenticatedCandidatCandidaturesRoute
   AuthenticatedCandidatCvRoute: typeof AuthenticatedCandidatCvRoute
-  AuthenticatedCandidatMessagesRoute: typeof AuthenticatedCandidatMessagesRoute
   AuthenticatedCandidatProfilRoute: typeof AuthenticatedCandidatProfilRoute
   AuthenticatedCandidatIndexRoute: typeof AuthenticatedCandidatIndexRoute
 }
@@ -808,7 +769,6 @@ const AuthenticatedCandidatRouteChildren: AuthenticatedCandidatRouteChildren = {
   AuthenticatedCandidatCandidaturesRoute:
     AuthenticatedCandidatCandidaturesRoute,
   AuthenticatedCandidatCvRoute: AuthenticatedCandidatCvRoute,
-  AuthenticatedCandidatMessagesRoute: AuthenticatedCandidatMessagesRoute,
   AuthenticatedCandidatProfilRoute: AuthenticatedCandidatProfilRoute,
   AuthenticatedCandidatIndexRoute: AuthenticatedCandidatIndexRoute,
 }
@@ -841,7 +801,6 @@ interface AuthenticatedRecruteurRouteChildren {
   AuthenticatedRecruteurCvthequeRoute: typeof AuthenticatedRecruteurCvthequeRoute
   AuthenticatedRecruteurEntrepriseRoute: typeof AuthenticatedRecruteurEntrepriseRoute
   AuthenticatedRecruteurFavorisRoute: typeof AuthenticatedRecruteurFavorisRoute
-  AuthenticatedRecruteurMessagesRoute: typeof AuthenticatedRecruteurMessagesRoute
   AuthenticatedRecruteurOffresRoute: typeof AuthenticatedRecruteurOffresRouteWithChildren
   AuthenticatedRecruteurIndexRoute: typeof AuthenticatedRecruteurIndexRoute
 }
@@ -854,7 +813,6 @@ const AuthenticatedRecruteurRouteChildren: AuthenticatedRecruteurRouteChildren =
     AuthenticatedRecruteurEntrepriseRoute:
       AuthenticatedRecruteurEntrepriseRoute,
     AuthenticatedRecruteurFavorisRoute: AuthenticatedRecruteurFavorisRoute,
-    AuthenticatedRecruteurMessagesRoute: AuthenticatedRecruteurMessagesRoute,
     AuthenticatedRecruteurOffresRoute:
       AuthenticatedRecruteurOffresRouteWithChildren,
     AuthenticatedRecruteurIndexRoute: AuthenticatedRecruteurIndexRoute,
@@ -881,29 +839,6 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
-interface EntreprisesRouteChildren {
-  EntreprisesCompanyIdRoute: typeof EntreprisesCompanyIdRoute
-}
-
-const EntreprisesRouteChildren: EntreprisesRouteChildren = {
-  EntreprisesCompanyIdRoute: EntreprisesCompanyIdRoute,
-}
-
-const EntreprisesRouteWithChildren = EntreprisesRoute._addFileChildren(
-  EntreprisesRouteChildren,
-)
-
-interface OffresRouteChildren {
-  OffresOfferIdRoute: typeof OffresOfferIdRoute
-}
-
-const OffresRouteChildren: OffresRouteChildren = {
-  OffresOfferIdRoute: OffresOfferIdRoute,
-}
-
-const OffresRouteWithChildren =
-  OffresRoute._addFileChildren(OffresRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
@@ -911,13 +846,15 @@ const rootRouteChildren: RootRouteChildren = {
   ConfidentialiteRoute: ConfidentialiteRoute,
   ConnexionRoute: ConnexionRoute,
   ContactRoute: ContactRoute,
-  EntreprisesRoute: EntreprisesRouteWithChildren,
+  EntreprisesRoute: EntreprisesRoute,
   FaqRoute: FaqRoute,
   InscriptionRoute: InscriptionRoute,
   MentionsLegalesRoute: MentionsLegalesRoute,
   MotDePasseOublieRoute: MotDePasseOublieRoute,
-  OffresRoute: OffresRouteWithChildren,
+  OffresRoute: OffresRoute,
   ReinitialiserMotDePasseRoute: ReinitialiserMotDePasseRoute,
+  EntreprisesCompanyIdRoute: EntreprisesCompanyIdRoute,
+  OffresOfferIdRoute: OffresOfferIdRoute,
   ServicesServiceIdRoute: ServicesServiceIdRoute,
 }
 export const routeTree = rootRouteImport

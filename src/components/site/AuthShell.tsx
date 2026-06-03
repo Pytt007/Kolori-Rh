@@ -28,32 +28,22 @@ export function AuthShell({
         <div className="w-full max-w-md mx-auto">
           {/* Logo */}
           <Link to="/" className="inline-flex items-center gap-2 mb-10 group">
-            <img
-              src="/logo.png"
-              alt="Kolori RH"
-              className="h-12 object-contain"
-            />
+            <img src="/logo.png" alt="Kolori RH" className="h-12 object-contain" />
           </Link>
 
           {/* Eyebrow + Title */}
           <div className="mb-1 text-[11px] font-mono uppercase tracking-widest text-muted-foreground">
             {eyebrow}
           </div>
-          <h1 className="text-3xl font-bold text-foreground mb-1 font-display">
-            {title}
-          </h1>
-          {subtitle && (
-            <p className="text-sm text-muted-foreground mb-8">{subtitle}</p>
-          )}
+          <h1 className="text-3xl font-bold text-foreground mb-1 font-display">{title}</h1>
+          {subtitle && <p className="text-sm text-muted-foreground mb-8">{subtitle}</p>}
           {!subtitle && <div className="mb-6" />}
 
           {/* Form content */}
           <div className="space-y-1">{children}</div>
 
           {/* Footer */}
-          {footer && (
-            <div className="mt-6 text-sm text-muted-foreground">{footer}</div>
-          )}
+          {footer && <div className="mt-6 text-sm text-muted-foreground">{footer}</div>}
         </div>
       </div>
 
@@ -91,12 +81,13 @@ export function AuthShell({
             Bienvenue sur Kolori RH
           </p>
           <h2 className="text-3xl font-bold text-white leading-snug mb-3 font-display">
-            Trouvez le bon talent,<br />
+            Trouvez le bon talent,
+            <br />
             au bon moment.
           </h2>
           <p className="text-sm text-white/60 leading-relaxed max-w-xs mb-8">
-            Kolori RH connecte les entreprises ivoiriennes aux meilleurs profils.
-            Rejoignez des centaines d'entreprises et de candidats qui nous font confiance.
+            Kolori RH connecte les entreprises ivoiriennes aux meilleurs profils. Rejoignez des
+            centaines d'entreprises et de candidats qui nous font confiance.
           </p>
 
           {/* Social proof card */}
@@ -109,10 +100,13 @@ export function AuthShell({
             }}
           >
             <p className="text-white font-semibold text-sm leading-snug mb-1">
-              Postulez au bon emploi,<br />au bon endroit
+              Postulez au bon emploi,
+              <br />
+              au bon endroit
             </p>
             <p className="text-white/55 text-xs mb-4">
-              Soyez parmi les premiers à vivre l'expérience de recrutement la plus simple de Côte d'Ivoire.
+              Soyez parmi les premiers à vivre l'expérience de recrutement la plus simple de Côte
+              d'Ivoire.
             </p>
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2">

@@ -2,8 +2,9 @@ import { supabase } from "@/integrations/supabase/client";
 
 /** Ensure the current user has a candidate row. Returns the candidate id. */
 export async function ensureCandidate(userId: string): Promise<string> {
-  if (userId === "mock-candidate-1") {
-    return "mock-candidate-1";
+  // Guard pour tous les utilisateurs mock (mock-candidate-*, mock-recruiter-*, mock-admin-*)
+  if (userId.startsWith("mock-")) {
+    return userId;
   }
   const { data: existing, error: selErr } = await supabase
     .from("candidates")

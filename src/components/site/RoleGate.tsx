@@ -10,7 +10,11 @@ export function RoleGate({ allow, children }: { allow: AppRole[]; children: Reac
     if (loading || !isAuthenticated) return;
     const allowed = roles.some((r) => allow.includes(r));
     if (!allowed) {
-      const target = roles.includes("admin") ? "/admin" : roles.includes("recruteur") ? "/recruteur" : "/candidat";
+      const target = roles.includes("admin")
+        ? "/admin"
+        : roles.includes("recruteur")
+          ? "/recruteur"
+          : "/candidat";
       navigate({ to: target, replace: true });
     }
   }, [loading, isAuthenticated, roles, allow, navigate]);

@@ -17,12 +17,22 @@ function MentionsPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <SiteHeader />
       <main className="flex-1 max-w-3xl mx-auto px-6 py-16 w-full">
-        <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">Cadre juridique</div>
+        <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">
+          Cadre juridique
+        </div>
         <h1 className="font-display italic text-5xl mb-10">Mentions légales.</h1>
         <div className="prose prose-stone max-w-none space-y-6 text-sm">
           <section>
             <h2 className="font-display italic text-2xl mb-2">Éditeur</h2>
-            <p>L'Alternative RH — Société par actions simplifiée<br />Siège social : à compléter<br />SIREN : à compléter<br />Directeur de la publication : à compléter</p>
+            <p>
+              L'Alternative RH — Société par actions simplifiée
+              <br />
+              Siège social : à compléter
+              <br />
+              SIREN : à compléter
+              <br />
+              Directeur de la publication : à compléter
+            </p>
           </section>
           <section>
             <h2 className="font-display italic text-2xl mb-2">Hébergement</h2>
@@ -30,7 +40,11 @@ function MentionsPage() {
           </section>
           <section>
             <h2 className="font-display italic text-2xl mb-2">Propriété intellectuelle</h2>
-            <p>L'ensemble du site relève de la législation française et internationale sur le droit d'auteur et la propriété intellectuelle. Toute reproduction est interdite sans autorisation préalable.</p>
+            <p>
+              L'ensemble du site relève de la législation française et internationale sur le droit
+              d'auteur et la propriété intellectuelle. Toute reproduction est interdite sans
+              autorisation préalable.
+            </p>
           </section>
           <section>
             <h2 className="font-display italic text-2xl mb-2">Contact</h2>

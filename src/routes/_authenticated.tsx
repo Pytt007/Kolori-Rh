@@ -6,6 +6,10 @@ import { useAuth } from "@/lib/auth-context";
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async ({ location }) => {
     if (typeof window === "undefined") return;
+    const mockUser = localStorage.getItem("mock_auth_user");
+    const mockRoles = localStorage.getItem("mock_auth_roles");
+    if (mockUser && mockRoles) return;
+
     const { data } = await supabase.auth.getUser();
     if (!data.user) {
       throw redirect({ to: "/connexion", search: { redirect: location.href } as never });

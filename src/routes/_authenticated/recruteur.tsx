@@ -17,7 +17,6 @@ function RecruteurLayout() {
           { to: "/recruteur/entreprise", label: "Mon entreprise" },
           { to: "/recruteur/offres", label: "Mes offres" },
           { to: "/recruteur/candidatures", label: "Candidatures reçues" },
-          { to: "/recruteur/messages", label: "Messages" },
           { to: "/recruteur/cvtheque", label: "CVthèque" },
           { to: "/recruteur/favoris", label: "Favoris" },
           { to: "/offres", label: "Voir les offres publiques" },

@@ -17,7 +17,6 @@ function CandidatLayout() {
           { to: "/candidat/profil", label: "Mon profil" },
           { to: "/candidat/cv", label: "Mes CV" },
           { to: "/candidat/candidatures", label: "Mes candidatures" },
-          { to: "/candidat/messages", label: "Messages" },
           { to: "/offres", label: "Parcourir les offres" },
         ]}
       >
