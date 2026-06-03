@@ -22,9 +22,16 @@ import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
 import { Route as AProposRouteImport } from './routes/a-propos'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as InscriptionIndexRouteImport } from './routes/inscription.index'
+import { Route as ConnexionIndexRouteImport } from './routes/connexion.index'
 import { Route as ServicesServiceIdRouteImport } from './routes/services.$serviceId'
 import { Route as OffresOfferIdRouteImport } from './routes/offres_.$offerId'
+import { Route as InscriptionRecruteurRouteImport } from './routes/inscription.recruteur'
+import { Route as InscriptionCandidatRouteImport } from './routes/inscription.candidat'
 import { Route as EntreprisesCompanyIdRouteImport } from './routes/entreprises_.$companyId'
+import { Route as ConnexionRecruteurRouteImport } from './routes/connexion.recruteur'
+import { Route as ConnexionCandidatRouteImport } from './routes/connexion.candidat'
+import { Route as ConnexionAdminRouteImport } from './routes/connexion.admin'
 import { Route as AuthenticatedRecruteurRouteImport } from './routes/_authenticated/recruteur'
 import { Route as AuthenticatedCandidatRouteImport } from './routes/_authenticated/candidat'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -110,6 +117,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InscriptionIndexRoute = InscriptionIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => InscriptionRoute,
+} as any)
+const ConnexionIndexRoute = ConnexionIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ConnexionRoute,
+} as any)
 const ServicesServiceIdRoute = ServicesServiceIdRouteImport.update({
   id: '/services/$serviceId',
   path: '/services/$serviceId',
@@ -120,10 +137,35 @@ const OffresOfferIdRoute = OffresOfferIdRouteImport.update({
   path: '/offres/$offerId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InscriptionRecruteurRoute = InscriptionRecruteurRouteImport.update({
+  id: '/recruteur',
+  path: '/recruteur',
+  getParentRoute: () => InscriptionRoute,
+} as any)
+const InscriptionCandidatRoute = InscriptionCandidatRouteImport.update({
+  id: '/candidat',
+  path: '/candidat',
+  getParentRoute: () => InscriptionRoute,
+} as any)
 const EntreprisesCompanyIdRoute = EntreprisesCompanyIdRouteImport.update({
   id: '/entreprises_/$companyId',
   path: '/entreprises/$companyId',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ConnexionRecruteurRoute = ConnexionRecruteurRouteImport.update({
+  id: '/recruteur',
+  path: '/recruteur',
+  getParentRoute: () => ConnexionRoute,
+} as any)
+const ConnexionCandidatRoute = ConnexionCandidatRouteImport.update({
+  id: '/candidat',
+  path: '/candidat',
+  getParentRoute: () => ConnexionRoute,
+} as any)
+const ConnexionAdminRoute = ConnexionAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => ConnexionRoute,
 } as any)
 const AuthenticatedRecruteurRoute = AuthenticatedRecruteurRouteImport.update({
   id: '/recruteur',
@@ -245,11 +287,11 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/a-propos': typeof AProposRoute
   '/confidentialite': typeof ConfidentialiteRoute
-  '/connexion': typeof ConnexionRoute
+  '/connexion': typeof ConnexionRouteWithChildren
   '/contact': typeof ContactRoute
   '/entreprises': typeof EntreprisesRoute
   '/faq': typeof FaqRoute
-  '/inscription': typeof InscriptionRoute
+  '/inscription': typeof InscriptionRouteWithChildren
   '/mentions-legales': typeof MentionsLegalesRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/offres': typeof OffresRoute
@@ -257,9 +299,16 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/candidat': typeof AuthenticatedCandidatRouteWithChildren
   '/recruteur': typeof AuthenticatedRecruteurRouteWithChildren
+  '/connexion/admin': typeof ConnexionAdminRoute
+  '/connexion/candidat': typeof ConnexionCandidatRoute
+  '/connexion/recruteur': typeof ConnexionRecruteurRoute
   '/entreprises/$companyId': typeof EntreprisesCompanyIdRoute
+  '/inscription/candidat': typeof InscriptionCandidatRoute
+  '/inscription/recruteur': typeof InscriptionRecruteurRoute
   '/offres/$offerId': typeof OffresOfferIdRoute
   '/services/$serviceId': typeof ServicesServiceIdRoute
+  '/connexion/': typeof ConnexionIndexRoute
+  '/inscription/': typeof InscriptionIndexRoute
   '/admin/entreprises': typeof AuthenticatedAdminEntreprisesRoute
   '/admin/offres': typeof AuthenticatedAdminOffresRoute
   '/admin/referentiels': typeof AuthenticatedAdminReferentielsRoute
@@ -282,18 +331,23 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/a-propos': typeof AProposRoute
   '/confidentialite': typeof ConfidentialiteRoute
-  '/connexion': typeof ConnexionRoute
   '/contact': typeof ContactRoute
   '/entreprises': typeof EntreprisesRoute
   '/faq': typeof FaqRoute
-  '/inscription': typeof InscriptionRoute
   '/mentions-legales': typeof MentionsLegalesRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/offres': typeof OffresRoute
   '/reinitialiser-mot-de-passe': typeof ReinitialiserMotDePasseRoute
+  '/connexion/admin': typeof ConnexionAdminRoute
+  '/connexion/candidat': typeof ConnexionCandidatRoute
+  '/connexion/recruteur': typeof ConnexionRecruteurRoute
   '/entreprises/$companyId': typeof EntreprisesCompanyIdRoute
+  '/inscription/candidat': typeof InscriptionCandidatRoute
+  '/inscription/recruteur': typeof InscriptionRecruteurRoute
   '/offres/$offerId': typeof OffresOfferIdRoute
   '/services/$serviceId': typeof ServicesServiceIdRoute
+  '/connexion': typeof ConnexionIndexRoute
+  '/inscription': typeof InscriptionIndexRoute
   '/admin/entreprises': typeof AuthenticatedAdminEntreprisesRoute
   '/admin/offres': typeof AuthenticatedAdminOffresRoute
   '/admin/referentiels': typeof AuthenticatedAdminReferentielsRoute
@@ -318,11 +372,11 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/a-propos': typeof AProposRoute
   '/confidentialite': typeof ConfidentialiteRoute
-  '/connexion': typeof ConnexionRoute
+  '/connexion': typeof ConnexionRouteWithChildren
   '/contact': typeof ContactRoute
   '/entreprises': typeof EntreprisesRoute
   '/faq': typeof FaqRoute
-  '/inscription': typeof InscriptionRoute
+  '/inscription': typeof InscriptionRouteWithChildren
   '/mentions-legales': typeof MentionsLegalesRoute
   '/mot-de-passe-oublie': typeof MotDePasseOublieRoute
   '/offres': typeof OffresRoute
@@ -330,9 +384,16 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/candidat': typeof AuthenticatedCandidatRouteWithChildren
   '/_authenticated/recruteur': typeof AuthenticatedRecruteurRouteWithChildren
+  '/connexion/admin': typeof ConnexionAdminRoute
+  '/connexion/candidat': typeof ConnexionCandidatRoute
+  '/connexion/recruteur': typeof ConnexionRecruteurRoute
   '/entreprises_/$companyId': typeof EntreprisesCompanyIdRoute
+  '/inscription/candidat': typeof InscriptionCandidatRoute
+  '/inscription/recruteur': typeof InscriptionRecruteurRoute
   '/offres_/$offerId': typeof OffresOfferIdRoute
   '/services/$serviceId': typeof ServicesServiceIdRoute
+  '/connexion/': typeof ConnexionIndexRoute
+  '/inscription/': typeof InscriptionIndexRoute
   '/_authenticated/admin/entreprises': typeof AuthenticatedAdminEntreprisesRoute
   '/_authenticated/admin/offres': typeof AuthenticatedAdminOffresRoute
   '/_authenticated/admin/referentiels': typeof AuthenticatedAdminReferentielsRoute
@@ -369,9 +430,16 @@ export interface FileRouteTypes {
     | '/admin'
     | '/candidat'
     | '/recruteur'
+    | '/connexion/admin'
+    | '/connexion/candidat'
+    | '/connexion/recruteur'
     | '/entreprises/$companyId'
+    | '/inscription/candidat'
+    | '/inscription/recruteur'
     | '/offres/$offerId'
     | '/services/$serviceId'
+    | '/connexion/'
+    | '/inscription/'
     | '/admin/entreprises'
     | '/admin/offres'
     | '/admin/referentiels'
@@ -394,18 +462,23 @@ export interface FileRouteTypes {
     | '/'
     | '/a-propos'
     | '/confidentialite'
-    | '/connexion'
     | '/contact'
     | '/entreprises'
     | '/faq'
-    | '/inscription'
     | '/mentions-legales'
     | '/mot-de-passe-oublie'
     | '/offres'
     | '/reinitialiser-mot-de-passe'
+    | '/connexion/admin'
+    | '/connexion/candidat'
+    | '/connexion/recruteur'
     | '/entreprises/$companyId'
+    | '/inscription/candidat'
+    | '/inscription/recruteur'
     | '/offres/$offerId'
     | '/services/$serviceId'
+    | '/connexion'
+    | '/inscription'
     | '/admin/entreprises'
     | '/admin/offres'
     | '/admin/referentiels'
@@ -441,9 +514,16 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/candidat'
     | '/_authenticated/recruteur'
+    | '/connexion/admin'
+    | '/connexion/candidat'
+    | '/connexion/recruteur'
     | '/entreprises_/$companyId'
+    | '/inscription/candidat'
+    | '/inscription/recruteur'
     | '/offres_/$offerId'
     | '/services/$serviceId'
+    | '/connexion/'
+    | '/inscription/'
     | '/_authenticated/admin/entreprises'
     | '/_authenticated/admin/offres'
     | '/_authenticated/admin/referentiels'
@@ -468,11 +548,11 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AProposRoute: typeof AProposRoute
   ConfidentialiteRoute: typeof ConfidentialiteRoute
-  ConnexionRoute: typeof ConnexionRoute
+  ConnexionRoute: typeof ConnexionRouteWithChildren
   ContactRoute: typeof ContactRoute
   EntreprisesRoute: typeof EntreprisesRoute
   FaqRoute: typeof FaqRoute
-  InscriptionRoute: typeof InscriptionRoute
+  InscriptionRoute: typeof InscriptionRouteWithChildren
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   MotDePasseOublieRoute: typeof MotDePasseOublieRoute
   OffresRoute: typeof OffresRoute
@@ -575,6 +655,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/inscription/': {
+      id: '/inscription/'
+      path: '/'
+      fullPath: '/inscription/'
+      preLoaderRoute: typeof InscriptionIndexRouteImport
+      parentRoute: typeof InscriptionRoute
+    }
+    '/connexion/': {
+      id: '/connexion/'
+      path: '/'
+      fullPath: '/connexion/'
+      preLoaderRoute: typeof ConnexionIndexRouteImport
+      parentRoute: typeof ConnexionRoute
+    }
     '/services/$serviceId': {
       id: '/services/$serviceId'
       path: '/services/$serviceId'
@@ -589,12 +683,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OffresOfferIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/inscription/recruteur': {
+      id: '/inscription/recruteur'
+      path: '/recruteur'
+      fullPath: '/inscription/recruteur'
+      preLoaderRoute: typeof InscriptionRecruteurRouteImport
+      parentRoute: typeof InscriptionRoute
+    }
+    '/inscription/candidat': {
+      id: '/inscription/candidat'
+      path: '/candidat'
+      fullPath: '/inscription/candidat'
+      preLoaderRoute: typeof InscriptionCandidatRouteImport
+      parentRoute: typeof InscriptionRoute
+    }
     '/entreprises_/$companyId': {
       id: '/entreprises_/$companyId'
       path: '/entreprises/$companyId'
       fullPath: '/entreprises/$companyId'
       preLoaderRoute: typeof EntreprisesCompanyIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/connexion/recruteur': {
+      id: '/connexion/recruteur'
+      path: '/recruteur'
+      fullPath: '/connexion/recruteur'
+      preLoaderRoute: typeof ConnexionRecruteurRouteImport
+      parentRoute: typeof ConnexionRoute
+    }
+    '/connexion/candidat': {
+      id: '/connexion/candidat'
+      path: '/candidat'
+      fullPath: '/connexion/candidat'
+      preLoaderRoute: typeof ConnexionCandidatRouteImport
+      parentRoute: typeof ConnexionRoute
+    }
+    '/connexion/admin': {
+      id: '/connexion/admin'
+      path: '/admin'
+      fullPath: '/connexion/admin'
+      preLoaderRoute: typeof ConnexionAdminRouteImport
+      parentRoute: typeof ConnexionRoute
     }
     '/_authenticated/recruteur': {
       id: '/_authenticated/recruteur'
@@ -839,16 +968,50 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface ConnexionRouteChildren {
+  ConnexionAdminRoute: typeof ConnexionAdminRoute
+  ConnexionCandidatRoute: typeof ConnexionCandidatRoute
+  ConnexionRecruteurRoute: typeof ConnexionRecruteurRoute
+  ConnexionIndexRoute: typeof ConnexionIndexRoute
+}
+
+const ConnexionRouteChildren: ConnexionRouteChildren = {
+  ConnexionAdminRoute: ConnexionAdminRoute,
+  ConnexionCandidatRoute: ConnexionCandidatRoute,
+  ConnexionRecruteurRoute: ConnexionRecruteurRoute,
+  ConnexionIndexRoute: ConnexionIndexRoute,
+}
+
+const ConnexionRouteWithChildren = ConnexionRoute._addFileChildren(
+  ConnexionRouteChildren,
+)
+
+interface InscriptionRouteChildren {
+  InscriptionCandidatRoute: typeof InscriptionCandidatRoute
+  InscriptionRecruteurRoute: typeof InscriptionRecruteurRoute
+  InscriptionIndexRoute: typeof InscriptionIndexRoute
+}
+
+const InscriptionRouteChildren: InscriptionRouteChildren = {
+  InscriptionCandidatRoute: InscriptionCandidatRoute,
+  InscriptionRecruteurRoute: InscriptionRecruteurRoute,
+  InscriptionIndexRoute: InscriptionIndexRoute,
+}
+
+const InscriptionRouteWithChildren = InscriptionRoute._addFileChildren(
+  InscriptionRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AProposRoute: AProposRoute,
   ConfidentialiteRoute: ConfidentialiteRoute,
-  ConnexionRoute: ConnexionRoute,
+  ConnexionRoute: ConnexionRouteWithChildren,
   ContactRoute: ContactRoute,
   EntreprisesRoute: EntreprisesRoute,
   FaqRoute: FaqRoute,
-  InscriptionRoute: InscriptionRoute,
+  InscriptionRoute: InscriptionRouteWithChildren,
   MentionsLegalesRoute: MentionsLegalesRoute,
   MotDePasseOublieRoute: MotDePasseOublieRoute,
   OffresRoute: OffresRoute,

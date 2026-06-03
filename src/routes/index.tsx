@@ -148,68 +148,70 @@ function Index() {
       <SiteHeader />
 
       {/* 1. Hero Section Slider */}
-      <section className="relative pt-12 pb-20 md:py-24 overflow-hidden min-h-[580px] flex items-center">
-        <div className="max-w-7xl mx-auto px-6 w-full relative">
-          <div key={currentSlide} className="grid md:grid-cols-12 gap-12 items-center">
-            {/* Left Text */}
-            <div className="md:col-span-6 space-y-6 z-10 animate-reveal">
-              <span className="text-xs uppercase tracking-widest text-accent font-bold">
-                {slides[currentSlide].subtitle}
-              </span>
-              <h1 className="text-5xl md:text-7xl font-display font-black tracking-tight leading-[1.05] text-foreground">
-                {slides[currentSlide].title}
-              </h1>
-              <p className="max-w-md text-base text-muted-foreground leading-relaxed">
-                {slides[currentSlide].description}
-              </p>
-              <div className="flex flex-wrap gap-4 pt-2">
-                <Link
-                  to={slides[currentSlide].cta1Link as any}
-                  className="bg-primary text-primary-foreground font-semibold px-8 py-3.5 rounded-full hover:brightness-110 shadow-md hover:shadow-lg transition-all text-sm"
-                >
-                  {slides[currentSlide].cta1Text}
-                </Link>
-                <Link
-                  to={slides[currentSlide].cta2Link as any}
-                  search={slides[currentSlide].cta2Search as any}
-                  className="bg-white border border-border text-foreground font-semibold px-8 py-3.5 rounded-full hover:bg-secondary transition-colors text-sm"
-                >
-                  {slides[currentSlide].cta2Text}
-                </Link>
-              </div>
-            </div>
-
-            {/* Right Visual Frame */}
-            <div className="md:col-span-6 flex justify-center relative animate-reveal [animation-delay:150ms]">
-              <div className="absolute -bottom-6 left-1/4 w-32 h-32 bg-accent rounded-full -z-10 shadow-lg transform -translate-x-12 opacity-80" />
-              <div className="absolute -top-6 right-1/4 w-12 h-12 border-4 border-muted rounded-full -z-10 opacity-60" />
-
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl w-full max-w-md border-4 border-white aspect-[4/3]">
+      <section className="relative pt-24 pb-20 md:pt-36 md:pb-24 overflow-hidden min-h-[580px] flex items-center bg-gradient-to-b from-[#1d3a6c]/5 to-transparent">
+        <div className="w-[90%] md:w-[80%] mx-auto relative">
+          <div className="relative">
+            {/* The rounded card container */}
+            <div className="relative rounded-[24px] md:rounded-[32px] overflow-hidden bg-[#1d3a6c] shadow-2xl min-h-[480px] md:min-h-[520px] lg:min-h-[560px] flex items-center">
+              {/* Slide background image & overlay */}
+              <div key={`bg-${currentSlide}`} className="absolute inset-0 w-full h-full">
                 <img
                   src={slides[currentSlide].image}
                   alt="Kolori RH Banner"
-                  className="object-cover w-full h-full"
+                  className="absolute right-0 top-0 bottom-0 w-full md:w-3/5 h-full object-cover z-0 object-center animate-reveal"
                 />
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1d3a6c] via-[#1d3a6c]/90 to-[#1d3a6c]/50 md:bg-gradient-to-r md:from-[#1d3a6c] md:from-35% md:via-[#1d3a6c]/85 md:to-transparent z-10 pointer-events-none" />
+              </div>
+
+              {/* Content */}
+              <div key={`content-${currentSlide}`} className="relative z-20 w-full px-6 py-12 md:py-16 md:pl-16 md:pr-8 grid md:grid-cols-12 gap-8 items-center">
+                <div className="md:col-span-8 lg:col-span-7 space-y-6 text-white animate-reveal [&_.text-accent]:text-[#f87171]">
+                  <span className="text-xs uppercase tracking-widest text-[#f87171] font-bold block">
+                    {slides[currentSlide].subtitle}
+                  </span>
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-black tracking-tight leading-[1.1] text-white">
+                    {slides[currentSlide].title}
+                  </h1>
+                  <p className="max-w-lg text-sm md:text-base text-white/80 leading-relaxed">
+                    {slides[currentSlide].description}
+                  </p>
+                  <div className="flex flex-wrap gap-4 pt-2">
+                    <Link
+                      to={slides[currentSlide].cta1Link as any}
+                      className="bg-white text-[#1d3a6c] font-semibold px-8 py-3.5 rounded-full hover:bg-neutral-100 shadow-md hover:shadow-lg transition-all text-sm"
+                    >
+                      {slides[currentSlide].cta1Text}
+                    </Link>
+                    <Link
+                      to={slides[currentSlide].cta2Link as any}
+                      search={slides[currentSlide].cta2Search as any}
+                      className="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold px-8 py-3.5 rounded-full transition-colors text-sm"
+                    >
+                      {slides[currentSlide].cta2Text}
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
+
+            {/* Slider controls (Arrows) */}
+            <button
+              onClick={() => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)}
+              className="absolute left-4 md:left-0 md:-translate-x-6 top-1/2 -translate-y-1/2 p-3 rounded-full border border-border bg-white/95 text-foreground hover:bg-secondary hover:text-[#1d3a6c] shadow-md transition-all hidden md:flex items-center justify-center z-30 cursor-pointer"
+              aria-label="Slide précédent"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+
+            <button
+              onClick={() => setCurrentSlide((prev) => (prev + 1) % slides.length)}
+              className="absolute right-4 md:right-0 md:translate-x-6 top-1/2 -translate-y-1/2 p-3 rounded-full border border-border bg-white/95 text-foreground hover:bg-secondary hover:text-[#1d3a6c] shadow-md transition-all hidden md:flex items-center justify-center z-30 cursor-pointer"
+              aria-label="Slide suivant"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
           </div>
-
-          {/* Slider controls (Arrows) */}
-          <button
-            onClick={() => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)}
-            className="absolute left-0 top-1/2 -translate-y-1/2 p-2 rounded-full border border-border bg-white/95 text-foreground hover:bg-secondary shadow-md transition-all hidden md:flex items-center justify-center -translate-x-4 hover:-translate-x-5 z-20 cursor-pointer"
-            aria-label="Slide précédent"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-
-          <button
-            onClick={() => setCurrentSlide((prev) => (prev + 1) % slides.length)}
-            className="absolute right-0 top-1/2 -translate-y-1/2 p-2 rounded-full border border-border bg-white/95 text-foreground hover:bg-secondary shadow-md transition-all hidden md:flex items-center justify-center translate-x-4 hover:translate-x-5 z-20 cursor-pointer"
-            aria-label="Slide suivant"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
 
           {/* Indicator Dots */}
           <div className="flex justify-center gap-2 mt-12 md:mt-6">

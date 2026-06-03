@@ -35,6 +35,169 @@ async function fetchRoles(userId: string): Promise<AppRole[]> {
   return (data ?? []).map((r) => r.role as AppRole);
 }
 
+async function uploadBase64Image(userId: string, base64: string, isAvatar: boolean): Promise<string | null> {
+  try {
+    const parts = base64.split(";base64,");
+    const contentType = parts[0].split(":")[1];
+    const raw = window.atob(parts[1]);
+    const rawLength = raw.length;
+    const uInt8Array = new Uint8Array(rawLength);
+    for (let i = 0; i < rawLength; ++i) {
+      uInt8Array[i] = raw.charCodeAt(i);
+    }
+    const blob = new Blob([uInt8Array], { type: contentType });
+    const ext = contentType.split("/")[1] || "png";
+    const filename = `${Date.now()}.${ext}`;
+
+    if (isAvatar) {
+      const path = `avatars/${userId}/${filename}`;
+      const { error } = await supabase.storage
+        .from("company_logos")
+        .upload(path, blob, { upsert: true });
+      if (error) throw error;
+      const { data } = supabase.storage.from("company_logos").getPublicUrl(path);
+      return data.publicUrl;
+    } else {
+      const path = `${userId}/${filename}`;
+      const { error } = await supabase.storage
+        .from("company_logos")
+        .upload(path, blob, { upsert: true });
+      if (error) throw error;
+      const { data } = supabase.storage.from("company_logos").getPublicUrl(path);
+      return data.publicUrl;
+    }
+  } catch (e) {
+    console.error("Échec du téléversement Base64 :", e);
+    return null;
+  }
+}
+
+async function syncUserMetadataToTables(user: User) {
+  const metadata = user.user_metadata;
+  if (!metadata || !metadata.role) return;
+
+  const role = metadata.role;
+  const prenom = metadata.prenom;
+  const nom = metadata.nom;
+  const telephone = metadata.telephone;
+  const ville = metadata.ville;
+
+  try {
+    // 1. Sync profiles table
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("id, telephone, ville, photo_url")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (profile) {
+      const profileUpdates: any = {};
+      if (!profile.telephone && telephone) profileUpdates.telephone = telephone;
+      if (!profile.ville && ville) profileUpdates.ville = ville;
+
+      // Synchronisation de la photo si présente dans le localStorage suite à l'inscription
+      const pendingPhoto = typeof window !== "undefined" ? localStorage.getItem("signup_pending_photo") : null;
+      if (pendingPhoto && !profile.photo_url) {
+        const publicUrl = await uploadBase64Image(user.id, pendingPhoto, true);
+        if (publicUrl) {
+          profileUpdates.photo_url = publicUrl;
+          localStorage.removeItem("signup_pending_photo");
+        }
+      }
+
+      if (Object.keys(profileUpdates).length > 0) {
+        await supabase.from("profiles").update(profileUpdates).eq("id", user.id);
+      }
+    }
+
+    // 2. Sync role-specific tables
+    if (role === "candidat") {
+      const { data: candidate } = await supabase
+        .from("candidates")
+        .select("id, titre")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (candidate) {
+        if (!candidate.titre && metadata.titre) {
+          const comps = metadata.competences;
+          const competencesArray = Array.isArray(comps)
+            ? comps
+            : typeof comps === "string"
+            ? comps.split(",").map((s: string) => s.trim()).filter(Boolean)
+            : [];
+
+          await supabase
+            .from("candidates")
+            .update({
+              titre: metadata.titre || null,
+              diplome: metadata.diplome || null,
+              competences: competencesArray,
+              disponibilite: metadata.disponibilite || null,
+              pretention_salariale: metadata.pretention_salariale || null,
+              bio: metadata.bio || null,
+              ville: metadata.ville || null,
+            })
+            .eq("user_id", user.id);
+        }
+      } else {
+        const comps = metadata.competences;
+        const competencesArray = Array.isArray(comps)
+          ? comps
+          : typeof comps === "string"
+          ? comps.split(",").map((s: string) => s.trim()).filter(Boolean)
+          : [];
+
+        await supabase.from("candidates").insert({
+          user_id: user.id,
+          titre: metadata.titre || null,
+          diplome: metadata.diplome || null,
+          competences: competencesArray,
+          disponibilite: metadata.disponibilite || null,
+          pretention_salariale: metadata.pretention_salariale || null,
+          bio: metadata.bio || null,
+          ville: metadata.ville || null,
+        });
+      }
+    } else if (role === "recruteur") {
+      const { data: company } = await supabase
+        .from("companies")
+        .select("id, logo_url")
+        .eq("owner_id", user.id)
+        .maybeSingle();
+
+      let publicLogoUrl = null;
+      const pendingLogo = typeof window !== "undefined" ? localStorage.getItem("signup_pending_logo") : null;
+      if (pendingLogo && (!company || !company.logo_url)) {
+        publicLogoUrl = await uploadBase64Image(user.id, pendingLogo, false);
+        if (publicLogoUrl) {
+          localStorage.removeItem("signup_pending_logo");
+        }
+      }
+
+      if (!company && metadata.nom_entreprise) {
+        await supabase.from("companies").insert({
+          owner_id: user.id,
+          nom: metadata.nom_entreprise,
+          secteur: metadata.secteur || null,
+          localisation: metadata.localisation || null,
+          site_web: metadata.site_web || null,
+          description: metadata.description || null,
+          logo_url: publicLogoUrl || null,
+          statut: "en_attente",
+        });
+      } else if (company && publicLogoUrl && !company.logo_url) {
+        await supabase
+          .from("companies")
+          .update({ logo_url: publicLogoUrl })
+          .eq("id", company.id);
+      }
+    }
+  } catch (err) {
+    console.error("Erreur de synchronisation inscription :", err);
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -74,6 +237,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // defer to avoid recursion warning
         setTimeout(() => {
           fetchRoles(newSession.user.id).then(setRoles);
+          syncUserMetadataToTables(newSession.user);
         }, 0);
       } else {
         setRoles([]);
@@ -86,6 +250,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(data.session);
       setUser(data.session?.user ?? null);
       if (data.session?.user) {
+        syncUserMetadataToTables(data.session.user);
         fetchRoles(data.session.user.id)
           .then(setRoles)
           .finally(() => setLoading(false));

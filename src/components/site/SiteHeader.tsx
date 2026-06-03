@@ -1,7 +1,19 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useLocation } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
-import { LogOut, User as UserIcon, Bell, Check, Menu, X } from "lucide-react";
+import {
+  LogOut,
+  User as UserIcon,
+  Bell,
+  Check,
+  Menu,
+  X,
+  Briefcase,
+  Building2,
+  Phone,
+  Info,
+  ChevronRight,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -27,9 +39,12 @@ type NotificationRow = {
 export function SiteHeader() {
   const { isAuthenticated, user, roles, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [notifications, setNotifications] = useState<NotificationRow[]>([]);
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const isHomePage = location.pathname === "/";
 
   const dashboardPath = roles.includes("admin")
     ? "/admin"
@@ -118,10 +133,14 @@ export function SiteHeader() {
   return (
     <>
       <nav
-        className={`sticky top-0 z-50 transition-all duration-300 ${
+        className={`${
+          isHomePage ? "fixed top-0 left-0 w-full" : "sticky top-0"
+        } z-50 transition-all duration-300 ${
           scrolled
             ? "bg-primary text-primary-foreground border-b border-primary/20 shadow-md"
-            : "bg-background/90 backdrop-blur-md border-b border-border"
+            : isHomePage
+              ? "bg-transparent border-b border-transparent"
+              : "bg-background/90 backdrop-blur-md border-b border-border text-foreground"
         }`}
       >
         {/* Top micro-header — desktop only */}
@@ -129,10 +148,12 @@ export function SiteHeader() {
           className={`border-b transition-all duration-300 py-1.5 px-6 hidden sm:block ${
             scrolled
               ? "bg-[#14233e]/50 border-primary/20 text-white/60"
-              : "bg-muted/50 border-b border-border/40 text-muted-foreground"
+              : isHomePage
+                ? "bg-[#1d3a6c]/5 border-b border-transparent text-[#1d3a6c]/60"
+                : "bg-muted/50 border-b border-border/40 text-muted-foreground"
           }`}
         >
-          <div className="max-w-7xl mx-auto flex justify-end gap-6 text-[11px] font-medium">
+          <div className="w-[90%] md:w-[80%] mx-auto flex justify-end gap-6 text-[11px] font-medium">
             <Link
               to="/entreprises"
               className={`transition-colors ${scrolled ? "text-white/70 hover:text-white" : "hover:text-primary"}`}
@@ -154,17 +175,17 @@ export function SiteHeader() {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 sm:h-20 flex items-center justify-between">
+        <div className="w-[90%] md:w-[80%] mx-auto h-20 sm:h-26 flex items-center justify-between">
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center gap-3 group"
+            className="flex items-center gap-3 group relative -top-0.5 sm:top-0"
             onClick={() => setMobileMenuOpen(false)}
           >
             <img
               src="/logo.png"
               alt="Kolori RH"
-              className={`h-10 sm:h-16 object-contain transition-all duration-300 group-hover:scale-105 ${
+              className={`h-[60px] sm:h-20 object-contain transition-all duration-300 group-hover:scale-105 ${
                 scrolled ? "brightness-0 invert" : ""
               }`}
             />
@@ -197,6 +218,17 @@ export function SiteHeader() {
               }}
             >
               Entreprises
+            </Link>
+            <Link
+              to="/a-propos"
+              className={`transition-colors relative py-2 ${scrolled ? "hover:text-white" : "hover:text-foreground"}`}
+              activeProps={{
+                className: scrolled
+                  ? "text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-white"
+                  : "text-foreground after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary",
+              }}
+            >
+              À propos
             </Link>
             <Link
               to="/contact"
@@ -323,114 +355,129 @@ export function SiteHeader() {
                 </DropdownMenu>
               </>
             ) : (
-              <>
-                <Link
-                  to="/connexion"
-                  className={`text-sm font-semibold px-5 py-2.5 rounded-full border transition-colors ${
-                    scrolled
-                      ? "border-white/30 text-white hover:bg-white/10"
-                      : "border-border hover:bg-secondary"
-                  }`}
-                >
-                  Connexion
-                </Link>
-                <Link
-                  to="/inscription"
-                  search={{ role: "recruteur" } as never}
-                  className={`text-sm font-semibold px-6 py-2.5 rounded-full shadow-sm hover:brightness-110 transition-all ${
-                    scrolled ? "bg-accent text-white" : "bg-primary text-primary-foreground"
-                  }`}
-                >
-                  Recruter
-                </Link>
-              </>
+              <Link
+                to="/connexion"
+                className={`text-sm font-semibold px-6 py-2.5 rounded-full border transition-colors ${
+                  scrolled
+                    ? "border-white/30 text-white hover:bg-white/10"
+                    : "border-border hover:bg-secondary"
+                }`}
+              >
+                Connexion / Inscription
+              </Link>
             )}
           </div>
 
           {/* Mobile: hamburger button */}
           <button
             onClick={() => setMobileMenuOpen((v) => !v)}
-            className={`lg:hidden p-2 rounded-xl transition-colors ${
-              scrolled ? "text-white hover:bg-white/10" : "text-foreground hover:bg-secondary"
+            className={`lg:hidden p-3 rounded-full border shadow-sm transition-all duration-300 cursor-pointer ${
+              scrolled
+                ? "border-white/20 bg-white/10 text-white hover:bg-white/20"
+                : "border-border bg-white text-foreground hover:bg-neutral-50"
             }`}
             aria-label={mobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
           >
-            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            <div className="w-5 h-4 flex flex-col justify-between items-center group/hamburger">
+              <span className="w-5 h-0.5 bg-current rounded-full transition-all duration-300" />
+              <span className="w-5 h-0.5 bg-current rounded-full transition-all duration-300" />
+              <span className="w-5 h-0.5 bg-current rounded-full transition-all duration-300" />
+            </div>
           </button>
         </div>
       </nav>
 
-      {/* ── Mobile full-screen menu ─────────────────────────────────────────── */}
-      {mobileMenuOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
+      {/* ── Mobile menu Drawer (Slides from Right to Left) ─────────────────── */}
+      {/* Backdrop overlay */}
+      <div
+        className={`fixed inset-0 z-40 bg-black/45 backdrop-blur-sm transition-opacity duration-300 lg:hidden ${
+          mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={() => setMobileMenuOpen(false)}
+      />
+
+      {/* Slide-in Menu Drawer */}
+      <div
+        className={`fixed inset-y-0 right-0 z-50 w-full max-w-xs bg-gradient-to-b from-[#1d3a6c] to-[#122342] text-white shadow-2xl flex flex-col transition-transform duration-300 ease-in-out transform lg:hidden ${
+          mobileMenuOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        {/* Drawer Header */}
+        <div className="flex items-center justify-between p-5 border-b border-white/10">
+          <Link to="/" onClick={() => setMobileMenuOpen(false)} className="h-10">
+            <img src="/logo.png" alt="Kolori RH" className="h-full object-contain brightness-0 invert" />
+          </Link>
+          <button
             onClick={() => setMobileMenuOpen(false)}
-          />
-          <div className="fixed top-14 left-0 right-0 z-50 bg-white shadow-2xl border-b border-border animate-reveal">
-            {/* Nav links */}
-            <div className="px-4 pt-4 pb-2 flex flex-col gap-1">
-              {[
-                { to: "/offres", label: "Offres d'emploi" },
-                { to: "/entreprises", label: "Entreprises" },
-                { to: "/contact", label: "Contact" },
-                { to: "/a-propos", label: "À propos" },
-              ].map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center px-4 py-3.5 rounded-xl text-sm font-semibold text-foreground hover:bg-slate-50 active:bg-slate-100 transition-colors"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-            {/* Auth actions */}
-            <div className="px-4 pb-5 pt-3 border-t border-border flex flex-col gap-3">
-              {isAuthenticated ? (
-                <>
-                  <Link
-                    to={dashboardPath}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-primary text-white text-sm font-bold"
-                  >
-                    <UserIcon className="h-4 w-4" /> Mon espace
-                  </Link>
-                  <button
-                    onClick={async () => {
-                      setMobileMenuOpen(false);
-                      await signOut();
-                      navigate({ to: "/" });
-                    }}
-                    className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-border text-sm font-semibold text-muted-foreground"
-                  >
-                    <LogOut className="h-4 w-4" /> Se déconnecter
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link
-                    to="/connexion"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center px-4 py-3 rounded-xl border border-border text-sm font-semibold text-foreground"
-                  >
-                    Connexion
-                  </Link>
-                  <Link
-                    to="/inscription"
-                    search={{ role: "recruteur" } as never}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center px-4 py-3 rounded-xl bg-primary text-white text-sm font-bold"
-                  >
-                    Recruter — Publier une offre
-                  </Link>
-                </>
-              )}
-            </div>
+            className="p-2.5 rounded-full border border-white/10 text-white/70 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Drawer Links */}
+        <div className="flex-1 overflow-y-auto px-4 py-8 space-y-3">
+          {[
+            { to: "/offres", label: "Offres d'emploi", icon: Briefcase },
+            { to: "/entreprises", label: "Entreprises", icon: Building2 },
+            { to: "/contact", label: "Contact", icon: Phone },
+            { to: "/a-propos", label: "À propos", icon: Info },
+          ].map((link) => {
+            const Icon = link.icon;
+            return (
+              <Link
+                key={link.to}
+                to={link.to}
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between px-5 py-4 rounded-2xl text-sm font-semibold text-white/85 hover:bg-white/5 active:bg-white/10 hover:text-white transition-all group"
+              >
+                <div className="flex items-center gap-4">
+                  <Icon className="h-4.5 w-4.5 text-[#f87171] group-hover:scale-110 transition-transform" />
+                  <span>{link.label}</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-white/30 group-hover:text-white/75 group-hover:translate-x-0.5 transition-all" />
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Drawer Auth Actions */}
+        <div className="p-5 border-t border-white/10 bg-[#142646]/50 flex flex-col gap-3">
+          {isAuthenticated ? (
+            <>
+              <Link
+                to={dashboardPath}
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl bg-white text-[#1d3a6c] text-sm font-bold shadow-md hover:bg-neutral-100 transition-all"
+              >
+                <UserIcon className="h-4 w-4" /> Mon espace
+              </Link>
+              <button
+                onClick={async () => {
+                  setMobileMenuOpen(false);
+                  await signOut();
+                  navigate({ to: "/" });
+                }}
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-white/15 bg-white/5 text-sm font-semibold text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                <LogOut className="h-4 w-4" /> Se déconnecter
+              </button>
+            </>
+          ) : (
+            <Link
+              to="/connexion"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center justify-center px-4 py-3.5 rounded-xl bg-white text-[#1d3a6c] text-sm font-bold shadow-md hover:bg-neutral-100 transition-all"
+            >
+              Connexion / Inscription
+            </Link>
+          )}
+          
+          <div className="text-[10px] text-white/30 text-center font-mono mt-2 uppercase tracking-wider">
+            Kolori RH — Abidjan, Côte d'Ivoire
           </div>
-        </>
-      )}
+        </div>
+      </div>
     </>
   );
 }

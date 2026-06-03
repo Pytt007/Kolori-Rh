@@ -98,12 +98,12 @@ function AProposPage() {
               talents, nous vous accompagnons dans vos démarches.
             </p>
             <div className="flex justify-center gap-4 pt-2">
-              <Link to="/inscription" search={{ role: "candidat" } as never}>
+              <Link to="/inscription/candidat">
                 <Button className="rounded-full px-8 py-3 bg-primary text-white font-semibold">
                   Espace Candidat
                 </Button>
               </Link>
-              <Link to="/inscription" search={{ role: "recruteur" } as never}>
+              <Link to="/inscription/recruteur">
                 <Button variant="outline" className="rounded-full px-8 py-3 font-semibold">
                   Espace Recruteur
                 </Button>
