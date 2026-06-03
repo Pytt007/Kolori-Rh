@@ -8,9 +8,9 @@ BEGIN NEW.updated_at = now(); RETURN NEW; END $$;
 REVOKE EXECUTE ON FUNCTION public.has_role(uuid, app_role) FROM PUBLIC, anon;
 REVOKE EXECUTE ON FUNCTION public.get_user_roles(uuid) FROM PUBLIC, anon;
 REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM PUBLIC, anon, authenticated;
--- has_role and get_user_roles need to be callable by authenticated users (used inside policies)
-GRANT EXECUTE ON FUNCTION public.has_role(uuid, app_role) TO authenticated, service_role;
-GRANT EXECUTE ON FUNCTION public.get_user_roles(uuid) TO authenticated, service_role;
+-- has_role and get_user_roles need to be callable by all users (used inside policies)
+GRANT EXECUTE ON FUNCTION public.has_role(uuid, app_role) TO anon, authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.get_user_roles(uuid) TO anon, authenticated, service_role;
 
 -- Restrict listing on public buckets: only allow listing inside user's own folder
 DROP POLICY IF EXISTS "avatars_public_read" ON storage.objects;
