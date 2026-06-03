@@ -3,8 +3,8 @@ import { Facebook, Linkedin, Instagram } from "lucide-react";
 
 export function SiteFooter() {
   return (
-    <footer className="bg-[#121212] text-[#a3a3a3] border-t border-neutral-800 pt-16 pb-8">
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-neutral-800">
+    <footer className="bg-[#1d3a6c] text-white/70 border-t border-white/10 pt-16 pb-8">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-white/10">
         {/* Brand column */}
         <div className="lg:col-span-1 flex flex-col gap-4">
           <div className="flex items-center gap-2 group">
@@ -14,7 +14,7 @@ export function SiteFooter() {
               className="h-14 object-contain brightness-0 invert"
             />
           </div>
-          <p className="text-xs text-[#737373] leading-relaxed">
+          <p className="text-xs text-white/50 leading-relaxed">
             Cabinet conseil en recrutement et gestion globale des ressources humaines. Votre avenir,
             nos couleurs.
           </p>
@@ -151,9 +151,9 @@ export function SiteFooter() {
       </div>
 
       {/* Partners and Socials */}
-      <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-6 border-b border-neutral-800/60">
+      <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-6 border-b border-white/5">
         <div>
-          <span className="text-xs uppercase tracking-widest text-[#737373] font-bold block mb-4 md:mb-2">
+          <span className="text-xs uppercase tracking-widest text-white/50 font-bold block mb-4 md:mb-2">
             Nos Partenaires
           </span>
           <div className="flex flex-wrap gap-6 items-center opacity-40 grayscale hover:opacity-75 transition-opacity">
@@ -166,25 +166,25 @@ export function SiteFooter() {
         </div>
 
         <div>
-          <span className="text-xs uppercase tracking-widest text-[#737373] font-bold block mb-3 md:text-right">
+          <span className="text-xs uppercase tracking-widest text-white/50 font-bold block mb-3 md:text-right">
             Suivez-nous
           </span>
           <div className="flex gap-4">
             <a
               href="#"
-              className="p-2 rounded-full bg-neutral-900 hover:bg-neutral-800 text-white transition-colors"
+              className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
             >
               <Facebook className="w-4 h-4" />
             </a>
             <a
               href="#"
-              className="p-2 rounded-full bg-neutral-900 hover:bg-neutral-800 text-white transition-colors"
+              className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
             >
               <Linkedin className="w-4 h-4" />
             </a>
             <a
               href="#"
-              className="p-2 rounded-full bg-neutral-900 hover:bg-neutral-800 text-white transition-colors"
+              className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
             >
               <Instagram className="w-4 h-4" />
             </a>
@@ -193,16 +193,16 @@ export function SiteFooter() {
       </div>
 
       {/* Bottom bar */}
-      <div className="max-w-7xl mx-auto px-6 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-[#525252]">
+      <div className="max-w-7xl mx-auto px-6 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-white/40">
         <div>© 2026 Kolori RH. Tous droits réservés.</div>
         <div className="flex gap-6">
-          <Link to="/confidentialite" className="hover:text-[#a3a3a3] transition-colors">
+          <Link to="/confidentialite" className="hover:text-white transition-colors">
             Politique de confidentialité
           </Link>
-          <Link to="/mentions-legales" className="hover:text-[#a3a3a3] transition-colors">
+          <Link to="/mentions-legales" className="hover:text-white transition-colors">
             Mentions légales
           </Link>
-          <Link to="/contact" className="hover:text-[#a3a3a3] transition-colors">
+          <Link to="/contact" className="hover:text-white transition-colors">
             Contact
           </Link>
         </div>
