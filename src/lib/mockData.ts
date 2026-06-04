@@ -311,8 +311,98 @@ export function getMockApplications(): MockApplication[] {
         cv_id: "cv-1",
         lettre:
           "Madame, Monsieur,\n\nJe postule pour le poste de Responsable Recrutement. Mon profil correspond parfaitement à vos recherches.",
-        statut: "envoyee",
+        statut: "consultee",
         created_at: "2026-05-30T16:00:00Z",
+      },
+      {
+        id: "app-3",
+        candidate_id: "mock-candidate-1",
+        offer_id: "offer-4",
+        cv_id: "cv-1",
+        lettre: "Je postule au poste de Comptable Unique à Bouaké.",
+        statut: "refusee",
+        created_at: "2026-06-01T10:00:00Z",
+      },
+      {
+        id: "app-4",
+        candidate_id: "mock-candidate-1",
+        offer_id: "offer-5",
+        cv_id: "cv-1",
+        lettre: "Candidature pour le poste de Chef de Projet Marketing Digital.",
+        statut: "preselectionnee",
+        created_at: "2026-06-02T11:00:00Z",
+      },
+      {
+        id: "app-5",
+        candidate_id: "mock-candidate-1",
+        offer_id: "offer-6",
+        cv_id: "cv-1",
+        lettre: "Candidature au poste de Consultant Paie.",
+        statut: "recrute",
+        created_at: "2026-06-03T09:00:00Z",
+      },
+      {
+        id: "app-6",
+        candidate_id: "mock-candidate-1",
+        offer_id: "offer-2",
+        cv_id: "cv-1",
+        lettre: "Candidature pour le poste de Développeur Full-Stack React/Node.js.",
+        statut: "en_cours",
+        created_at: "2026-06-04T08:00:00Z",
+      },
+      {
+        id: "app-7",
+        candidate_id: "mock-candidate-2",
+        offer_id: "offer-1",
+        cv_id: "cv-2",
+        lettre: "Très intéressée par le poste de DRH.",
+        statut: "preselectionnee",
+        created_at: "2026-05-30T09:00:00Z",
+      },
+      {
+        id: "app-8",
+        candidate_id: "mock-candidate-3",
+        offer_id: "offer-1",
+        cv_id: "cv-3",
+        lettre: "Candidature spontanée / DRH.",
+        statut: "envoyee",
+        created_at: "2026-05-31T14:00:00Z",
+      },
+      {
+        id: "app-9",
+        candidate_id: "mock-candidate-4",
+        offer_id: "offer-1",
+        cv_id: "cv-4",
+        lettre: "Intéressée par votre poste de direction RH.",
+        statut: "refusee",
+        created_at: "2026-06-01T15:00:00Z",
+      },
+      {
+        id: "app-10",
+        candidate_id: "mock-candidate-2",
+        offer_id: "offer-2",
+        cv_id: "cv-2",
+        lettre: "Je postule au poste de dev React.",
+        statut: "envoyee",
+        created_at: "2026-06-02T10:00:00Z",
+      },
+      {
+        id: "app-11",
+        candidate_id: "mock-candidate-3",
+        offer_id: "offer-2",
+        cv_id: "cv-3",
+        lettre: "Développeur React senior expérimenté.",
+        statut: "entretien",
+        created_at: "2026-06-03T11:00:00Z",
+      },
+      {
+        id: "app-12",
+        candidate_id: "mock-candidate-4",
+        offer_id: "offer-2",
+        cv_id: "cv-4",
+        lettre: "Je souhaite rejoindre Ivory Tech en tant que développeuse.",
+        statut: "recrute",
+        created_at: "2026-06-04T09:00:00Z",
       },
     ];
     localStorage.setItem("mock_applications", JSON.stringify(defaultApps));
@@ -627,3 +717,267 @@ export function getMockAdminStats(): MockAdminStats {
     applications: getMockApplications().length,
   };
 }
+
+export type MockCandidateProfile = {
+  userId: string;
+  prenom: string;
+  nom: string;
+  telephone: string;
+  whatsapp: string;
+  email: string;
+  date_naissance: string;
+  sexe: string;
+  nationalite: string;
+  ville: string;
+  adresse: string;
+  permis_conduire: string;
+  titre: string;
+  metier_recherche: string;
+  diplome: string;
+  bio: string;
+  disponibilite: string;
+  pretention_salariale: string;
+  competences: string[];
+  experiences: any[];
+  langues: any[];
+  certifications: any[];
+  interets: string[];
+  mobilite: {
+    demenagement: boolean;
+    teletravail: boolean;
+    etranger: boolean;
+  };
+  photo_url: string | null;
+};
+
+const DEFAULT_MOCK_CANDIDATE: MockCandidateProfile = {
+  userId: "mock-candidate-1",
+  prenom: "Koffi",
+  nom: "Anan",
+  telephone: "+225 07 08 09 10 11",
+  whatsapp: "+225 07 08 09 10 11",
+  email: "koffi.anan@gmail.com",
+  date_naissance: "1994-06-15",
+  sexe: "M",
+  nationalite: "Ivoirienne",
+  ville: "Abidjan",
+  adresse: "Cocody Angré, Rue des Jardins",
+  permis_conduire: "Oui (Catégorie B)",
+  titre: "Directeur des Ressources Humaines",
+  metier_recherche: "Responsable RH",
+  diplome: "Master en Management des Ressources Humaines — Université Félix Houphouët-Boigny",
+  bio: "Professionnel RH avec 8 ans d'expérience en gestion des talents, droit social et administration du personnel en Côte d'Ivoire. Passionné par l'accompagnement des équipes et la transformation organisationnelle.",
+  disponibilite: "Immédiate",
+  pretention_salariale: "1 500 000 FCFA",
+  competences: ["Recrutement", "Droit social", "SYSCOHADA", "Leadership", "Gestion des conflits", "Formation"],
+  experiences: [
+    {
+      id: "exp-1",
+      poste: "Responsable des Ressources Humaines",
+      entreprise: "Ivory Tech Solutions",
+      secteur: "Technologie & Informatique",
+      ville: "Abidjan",
+      pays: "Côte d'Ivoire",
+      debut: "2022-01",
+      fin: "",
+      actuel: true,
+      missions: "Gestion du recrutement, paie et administration du personnel de 120 employés.",
+      resultats: "Réduction du taux de rotation de 15%."
+    },
+    {
+      id: "exp-2",
+      poste: "Chargé de Recrutement",
+      entreprise: "Sociaux & RH Cabinet",
+      secteur: "Ressources Humaines",
+      ville: "Abidjan",
+      pays: "Côte d'Ivoire",
+      debut: "2018-03",
+      fin: "2021-12",
+      actuel: false,
+      missions: "Sourcing et pré-sélection de candidats pour divers clients.",
+      resultats: "Placement réussi de 45 cadres."
+    }
+  ],
+  langues: [
+    { langue: "Français", niveau: "Courant" },
+    { langue: "Anglais", niveau: "Intermédiaire" }
+  ],
+  certifications: [
+    { nom: "Certification PHRi", organisme: "HRCI", obtention: "2021", expiration: "2024" }
+  ],
+  interets: ["Lecture", "Football", "Bénévolat"],
+  mobilite: { demenagement: true, teletravail: true, etranger: false },
+  photo_url: null
+};
+
+export function getMockCandidateProfile(userId: string): MockCandidateProfile {
+  if (typeof window === "undefined") return { ...DEFAULT_MOCK_CANDIDATE, userId };
+  const key = `mock_candidate_profile_${userId}`;
+  const stored = localStorage.getItem(key);
+  if (!stored) {
+    const legacyPrenom = localStorage.getItem("mock_candidate_prenom");
+    const legacyNom = localStorage.getItem("mock_candidate_nom");
+    const legacyTel = localStorage.getItem("mock_candidate_telephone");
+    const legacyVille = localStorage.getItem("mock_candidate_ville");
+    const legacyTitre = localStorage.getItem("mock_candidate_titre");
+    const legacyDiplome = localStorage.getItem("mock_candidate_diplome");
+    const legacyBio = localStorage.getItem("mock_candidate_bio");
+    const legacyDisp = localStorage.getItem("mock_candidate_disponibilite");
+    const legacySal = localStorage.getItem("mock_candidate_pretention_salariale");
+    const legacyComp = localStorage.getItem("mock_candidate_competences");
+    const legacyPhoto = localStorage.getItem("mock_candidate_photo");
+
+    if (legacyPrenom || legacyNom || legacyTitre) {
+      const migrated = {
+        ...DEFAULT_MOCK_CANDIDATE,
+        userId,
+        prenom: legacyPrenom || DEFAULT_MOCK_CANDIDATE.prenom,
+        nom: legacyNom || DEFAULT_MOCK_CANDIDATE.nom,
+        telephone: legacyTel || DEFAULT_MOCK_CANDIDATE.telephone,
+        ville: legacyVille || DEFAULT_MOCK_CANDIDATE.ville,
+        titre: legacyTitre || DEFAULT_MOCK_CANDIDATE.titre,
+        diplome: legacyDiplome || DEFAULT_MOCK_CANDIDATE.diplome,
+        bio: legacyBio || DEFAULT_MOCK_CANDIDATE.bio,
+        disponibilite: legacyDisp || DEFAULT_MOCK_CANDIDATE.disponibilite,
+        pretention_salariale: legacySal || DEFAULT_MOCK_CANDIDATE.pretention_salariale,
+        competences: legacyComp ? legacyComp.split(",").map(c => c.trim()).filter(Boolean) : DEFAULT_MOCK_CANDIDATE.competences,
+        photo_url: legacyPhoto || DEFAULT_MOCK_CANDIDATE.photo_url
+      };
+      localStorage.setItem(key, JSON.stringify(migrated));
+      return migrated;
+    }
+
+    localStorage.setItem(key, JSON.stringify({ ...DEFAULT_MOCK_CANDIDATE, userId }));
+    return { ...DEFAULT_MOCK_CANDIDATE, userId };
+  }
+  return JSON.parse(stored);
+}
+
+export function saveMockCandidateProfile(profile: MockCandidateProfile) {
+  if (typeof window === "undefined") return;
+  const key = `mock_candidate_profile_${profile.userId}`;
+  localStorage.setItem(key, JSON.stringify(profile));
+
+  localStorage.setItem("mock_candidate_prenom", profile.prenom);
+  localStorage.setItem("mock_candidate_nom", profile.nom);
+  localStorage.setItem("mock_candidate_telephone", profile.telephone);
+  localStorage.setItem("mock_candidate_ville", profile.ville);
+  localStorage.setItem("mock_candidate_titre", profile.titre);
+  localStorage.setItem("mock_candidate_diplome", profile.diplome);
+  localStorage.setItem("mock_candidate_bio", profile.bio);
+  localStorage.setItem("mock_candidate_disponibilite", profile.disponibilite);
+  localStorage.setItem("mock_candidate_pretention_salariale", profile.pretention_salariale);
+  localStorage.setItem("mock_candidate_competences", profile.competences.join(", "));
+  if (profile.photo_url) {
+    localStorage.setItem("mock_candidate_photo", profile.photo_url);
+  } else {
+    localStorage.removeItem("mock_candidate_photo");
+  }
+}
+
+export type MockRecruiterProfile = {
+  userId: string;
+  prenom: string;
+  nom: string;
+  fonction: string;
+  telephone: string;
+  email: string;
+  photo_url: string | null;
+  whatsapp: string;
+  linkedin: string;
+  nomEntreprise: string;
+  secteur: string;
+  pays: string;
+  ville: string;
+  adresse: string;
+  description: string;
+  logo_url: string | null;
+  site_web: string;
+  nombre_employes: string;
+  annee_creation: string;
+  linkedin_entreprise: string;
+  twitter_entreprise: string;
+  facebook_entreprise: string;
+  registre_commerce: string;
+  numero_fiscal: string;
+  docs_complementaires: string[];
+};
+
+const DEFAULT_MOCK_RECRUITER: MockRecruiterProfile = {
+  userId: "mock-recruiter-1",
+  prenom: "Marc",
+  nom: "Diarra",
+  fonction: "Directeur Recrutement & DRH",
+  telephone: "+225 01 02 03 04 05",
+  email: "recruteur@demo.ci",
+  photo_url: null,
+  whatsapp: "+225 01 02 03 04 05",
+  linkedin: "https://linkedin.com/in/marc-diarra-demo",
+  nomEntreprise: "Ivory Tech Solutions",
+  secteur: "Technologie & Informatique",
+  pays: "Côte d'Ivoire",
+  ville: "Abidjan",
+  adresse: "Cocody, Rue des Vallons, Immeuble Horizon",
+  description: "Ivory Tech Solutions est un leader de la transformation digitale et des solutions logicielles sur mesure en Afrique de l'Ouest. Nous accompagnons les grandes institutions publiques et privées dans la modernisation de leurs infrastructures technologiques.",
+  logo_url: null,
+  site_web: "https://www.ivorytech.ci",
+  nombre_employes: "50-150 employés",
+  annee_creation: "2015",
+  linkedin_entreprise: "https://linkedin.com/company/ivorytech",
+  twitter_entreprise: "https://twitter.com/ivorytech",
+  facebook_entreprise: "https://facebook.com/ivorytech",
+  registre_commerce: "CI-ABJ-2015-B-1234",
+  numero_fiscal: "1597531-M",
+  docs_complementaires: [],
+};
+
+export function getMockRecruiterProfile(userId: string): MockRecruiterProfile {
+  if (typeof window === "undefined") return { ...DEFAULT_MOCK_RECRUITER, userId };
+  const key = `mock_recruiter_profile_${userId}`;
+  const stored = localStorage.getItem(key);
+  if (!stored) {
+    const legacyNom = localStorage.getItem("mock_recruiter_nom");
+    const legacySecteur = localStorage.getItem("mock_recruiter_secteur");
+    const legacyLoc = localStorage.getItem("mock_recruiter_localisation");
+    const legacySite = localStorage.getItem("mock_recruiter_site_web");
+    const legacyDesc = localStorage.getItem("mock_recruiter_description");
+    const legacyLogo = localStorage.getItem("mock_recruiter_logo");
+
+    if (legacyNom || legacyDesc) {
+      const migrated = {
+        ...DEFAULT_MOCK_RECRUITER,
+        userId,
+        nomEntreprise: legacyNom || DEFAULT_MOCK_RECRUITER.nomEntreprise,
+        secteur: legacySecteur || DEFAULT_MOCK_RECRUITER.secteur,
+        ville: legacyLoc || DEFAULT_MOCK_RECRUITER.ville,
+        site_web: legacySite || DEFAULT_MOCK_RECRUITER.site_web,
+        description: legacyDesc || DEFAULT_MOCK_RECRUITER.description,
+        logo_url: legacyLogo || DEFAULT_MOCK_RECRUITER.logo_url,
+      };
+      localStorage.setItem(key, JSON.stringify(migrated));
+      return migrated;
+    }
+    localStorage.setItem(key, JSON.stringify({ ...DEFAULT_MOCK_RECRUITER, userId }));
+    return { ...DEFAULT_MOCK_RECRUITER, userId };
+  }
+  return JSON.parse(stored);
+}
+
+export function saveMockRecruiterProfile(profile: MockRecruiterProfile) {
+  if (typeof window === "undefined") return;
+  const key = `mock_recruiter_profile_${profile.userId}`;
+  localStorage.setItem(key, JSON.stringify(profile));
+
+  // Legacy sync
+  localStorage.setItem("mock_recruiter_nom", profile.nomEntreprise);
+  localStorage.setItem("mock_recruiter_secteur", profile.secteur);
+  localStorage.setItem("mock_recruiter_localisation", profile.ville);
+  localStorage.setItem("mock_recruiter_site_web", profile.site_web);
+  localStorage.setItem("mock_recruiter_description", profile.description);
+  if (profile.logo_url) {
+    localStorage.setItem("mock_recruiter_logo", profile.logo_url);
+  } else {
+    localStorage.removeItem("mock_recruiter_logo");
+  }
+}
+

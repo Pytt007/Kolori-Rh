@@ -5,6 +5,8 @@ import { AuthShell } from "@/components/site/AuthShell";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth-context";
 import { Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export const Route = createFileRoute("/connexion/admin")({
   head: () => ({
@@ -76,8 +78,8 @@ function ConnexionAdminPage() {
             Adresse email administrateur
           </label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-            <input
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
+            <Input
               id="email"
               type="email"
               required
@@ -85,7 +87,7 @@ function ConnexionAdminPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
-              className="w-full pl-10 pr-4 py-2.5 text-sm border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/30 focus:border-[#7c3aed] transition-all placeholder:text-muted-foreground/60"
+              className="pl-10 h-11 rounded-xl border-border bg-white shadow-sm focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] transition-all text-sm font-medium"
             />
           </div>
         </div>
@@ -96,8 +98,8 @@ function ConnexionAdminPage() {
             Mot de passe sécurisé
           </label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-            <input
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
+            <Input
               id="password"
               type={showPwd ? "text" : "password"}
               required
@@ -105,12 +107,12 @@ function ConnexionAdminPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
-              className="w-full pl-10 pr-10 py-2.5 text-sm border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/30 focus:border-[#7c3aed] transition-all placeholder:text-muted-foreground/60"
+              className="pl-10 pr-10 h-11 rounded-xl border-border bg-white shadow-sm focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] transition-all text-sm font-medium"
             />
             <button
               type="button"
               onClick={() => setShowPwd((v) => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors z-20"
             >
               {showPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
@@ -119,12 +121,10 @@ function ConnexionAdminPage() {
 
         {/* Remember + forgot */}
         <div className="flex items-center justify-between text-xs">
-          <label className="flex items-center gap-2 cursor-pointer select-none text-muted-foreground">
-            <input
-              type="checkbox"
+          <label className="flex items-center gap-2 cursor-pointer select-none text-muted-foreground font-semibold">
+            <Checkbox
               checked={remember}
-              onChange={(e) => setRemember(e.target.checked)}
-              className="w-3.5 h-3.5 rounded accent-[#7c3aed]"
+              onCheckedChange={(checked) => setRemember(!!checked)}
             />
             Se souvenir de moi
           </label>

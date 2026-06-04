@@ -197,59 +197,62 @@ function EntreprisesPage() {
               return (
                 <div
                   key={c.id}
-                  className="bg-card border border-border rounded-sm hover:border-primary transition-all p-6 flex flex-col justify-between group"
+                  className="relative bg-card border border-border rounded-sm hover:border-primary transition-all p-6 flex flex-col justify-between group cursor-pointer"
                 >
-                  <div>
-                    <div className="flex items-center gap-4 mb-4">
-                      {c.logo_url ? (
-                        <img
-                          src={c.logo_url}
-                          alt={`Logo ${c.nom}`}
-                          className="w-12 h-12 rounded-sm object-cover border border-border"
-                        />
-                      ) : (
-                        <div className="w-12 h-12 rounded-sm bg-secondary flex items-center justify-center border border-border">
-                          <Building2 className="w-6 h-6 text-muted-foreground" />
+                  <Link
+                    to="/entreprises/$companyId"
+                    params={{ companyId: c.id }}
+                    className="absolute inset-0 z-0"
+                  />
+                  <div className="relative z-10 pointer-events-none flex flex-col justify-between h-full w-full">
+                    <div>
+                      <div className="flex items-center gap-4 mb-4">
+                        {c.logo_url ? (
+                          <img
+                            src={c.logo_url}
+                            alt={`Logo ${c.nom}`}
+                            className="w-12 h-12 rounded-sm object-cover border border-border"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 rounded-sm bg-secondary flex items-center justify-center border border-border">
+                            <Building2 className="w-6 h-6 text-muted-foreground" />
+                          </div>
+                        )}
+                        <div>
+                          <h2 className="font-display italic text-xl leading-tight text-primary group-hover:text-accent transition-colors">
+                            {c.nom}
+                          </h2>
+                          {c.secteur && (
+                            <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
+                              {c.secteur}
+                            </span>
+                          )}
                         </div>
+                      </div>
+
+                      {c.description && (
+                        <p className="text-muted-foreground text-sm line-clamp-3 mb-4">
+                          {c.description}
+                        </p>
                       )}
-                      <div>
-                        <h2 className="font-display italic text-xl leading-tight text-primary group-hover:text-accent transition-colors">
-                          {c.nom}
-                        </h2>
-                        {c.secteur && (
-                          <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
-                            {c.secteur}
+                    </div>
+
+                    <div className="border-t border-border/50 pt-4 mt-4 flex items-center justify-between">
+                      <div className="flex flex-col gap-1">
+                        {c.localisation && (
+                          <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <MapPin className="h-3 w-3" /> {c.localisation}
                           </span>
                         )}
-                      </div>
-                    </div>
-
-                    {c.description && (
-                      <p className="text-muted-foreground text-sm line-clamp-3 mb-4">
-                        {c.description}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="border-t border-border/50 pt-4 mt-4 flex items-center justify-between">
-                    <div className="flex flex-col gap-1">
-                      {c.localisation && (
-                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <MapPin className="h-3 w-3" /> {c.localisation}
+                        <span className="flex items-center gap-1 text-xs text-primary font-semibold">
+                          <Briefcase className="h-3 w-3" /> {activeOffersCount} offre(s) active(s)
                         </span>
-                      )}
-                      <span className="flex items-center gap-1 text-xs text-primary font-semibold">
-                        <Briefcase className="h-3 w-3" /> {activeOffersCount} offre(s) active(s)
+                      </div>
+
+                      <span className="text-xs font-mono uppercase tracking-widest text-primary group-hover:underline font-semibold">
+                        Voir la fiche →
                       </span>
                     </div>
-
-                    <Link
-                      to="/entreprises/$companyId"
-                      params={{ companyId: c.id }}
-                      className="text-xs font-mono uppercase tracking-widest text-primary hover:underline font-semibold"
-                    >
-                      Voir la fiche →
-                    </Link>
                   </div>
                 </div>
               );

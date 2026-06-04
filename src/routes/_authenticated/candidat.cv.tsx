@@ -141,14 +141,37 @@ function CandidatCV() {
 
   return (
     <>
-      <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">
-        Documents
+      {/* ── Hero Header ─────────────────────────────────────────────────── */}
+      <div className="page-hero page-hero-candidat animate-reveal mb-8">
+        <div
+          className="page-hero-blob"
+          style={{ width: 320, height: 320, background: "#2A5298", top: -120, right: -80 }}
+        />
+        <div
+          className="page-hero-blob"
+          style={{ width: 200, height: 200, background: "#60A5FA", bottom: -80, left: 60 }}
+        />
+        <div className="hero-content">
+          <div className="dash-section-title" style={{ color: "rgba(255,255,255,0.6)" }}>
+            Documents
+          </div>
+          <h1 className="font-display font-black text-3xl sm:text-4xl text-white mb-3">
+            Mes CV
+          </h1>
+          <p className="text-white/80 text-xs sm:text-sm max-w-md">
+            Gérez vos CV pour postuler rapidement aux offres d'emploi disponibles sur la plateforme.
+          </p>
+        </div>
       </div>
-      <h1 className="font-display italic text-5xl mb-10">Mes CV.</h1>
 
-      <div className="border-2 border-dashed border-border rounded-sm p-8 text-center mb-8 bg-card">
-        <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-3" />
-        <p className="text-sm text-muted-foreground mb-4">PDF, DOC ou DOCX — 5 Mo maximum.</p>
+      <div className="bg-white border-2 border-dashed border-border/80 rounded-2xl p-8 text-center mb-6 shadow-sm">
+        <Upload className="h-8 w-8 mx-auto text-primary mb-3" />
+        <p className="text-sm font-semibold text-foreground mb-1">
+          Ajouter un nouveau CV
+        </p>
+        <p className="text-xs text-muted-foreground mb-4">
+          Formats acceptés : PDF, DOC, DOCX (5 Mo max)
+        </p>
         <input
           ref={fileRef}
           type="file"
@@ -159,41 +182,68 @@ function CandidatCV() {
             if (f) handleFile(f);
           }}
         />
-        <Button type="button" onClick={() => fileRef.current?.click()} disabled={uploading}>
+        <Button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          disabled={uploading}
+          className="rounded-xl px-5 bg-primary text-white hover:brightness-110"
+        >
           {uploading ? "Téléversement…" : "Choisir un fichier"}
         </Button>
       </div>
 
-      <div className="border border-border rounded-sm divide-y divide-border bg-card">
-        {docs.length === 0 && (
-          <div className="p-6 text-sm text-muted-foreground">Aucun CV pour l'instant.</div>
-        )}
-        {docs.map((d) => (
-          <div key={d.id} className="p-4 flex items-center gap-4">
-            <FileText className="h-5 w-5 text-muted-foreground" />
-            <div className="flex-1 min-w-0">
-              <div className="font-medium truncate">{d.nom_fichier}</div>
-              <div className="text-xs text-muted-foreground font-mono">
-                {d.taille ? `${(d.taille / 1024).toFixed(0)} ko` : "—"} ·{" "}
-                {new Date(d.created_at).toLocaleDateString("fr-FR")}
-              </div>
-            </div>
-            <Button type="button" variant="ghost" size="sm" onClick={() => download(d)}>
-              <Download className="h-4 w-4" />
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setCvToDelete(d);
-                setConfirmOpen(true);
-              }}
-            >
-              <Trash2 className="h-4 w-4 text-destructive" />
-            </Button>
+      <div className="bg-white border border-border/60 rounded-2xl shadow-sm overflow-hidden divide-y divide-border/50">
+        {docs.length === 0 ? (
+          <div className="p-8 text-center text-sm text-muted-foreground">
+            Aucun CV pour l'instant. Téléversez votre premier CV ci-dessus.
           </div>
-        ))}
+        ) : (
+          docs.map((d) => (
+            <div
+              key={d.id}
+              className="p-4.5 flex items-center gap-4 hover:bg-slate-50/50 transition-colors"
+            >
+              <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center shrink-0 text-primary">
+                <FileText className="h-5 w-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-sm text-foreground truncate">
+                  {d.nom_fichier}
+                </div>
+                <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-2">
+                  <span className="font-mono uppercase bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[10px] font-bold">
+                    {d.taille ? `${(d.taille / 1024).toFixed(0)} ko` : "—"}
+                  </span>
+                  <span className="text-slate-300">·</span>
+                  <span>{new Date(d.created_at).toLocaleDateString("fr-FR")}</span>
+                </div>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-9 w-9 p-0 rounded-xl hover:bg-primary/8 text-primary shrink-0"
+                onClick={() => download(d)}
+                title="Télécharger"
+              >
+                <Download className="h-4.5 w-4.5" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-9 w-9 p-0 rounded-xl hover:bg-red-50 text-red-500 shrink-0"
+                onClick={() => {
+                  setCvToDelete(d);
+                  setConfirmOpen(true);
+                }}
+                title="Supprimer"
+              >
+                <Trash2 className="h-4.5 w-4.5 text-red-500" />
+              </Button>
+            </div>
+          ))
+        )}
       </div>
 
       <ConfirmDialog

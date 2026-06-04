@@ -222,22 +222,27 @@ function CandidatCandidatures() {
               return (
                 <div
                   key={r.id}
-                  className={`flex flex-wrap sm:flex-nowrap items-center gap-3 sm:gap-4 p-4 sm:p-5 transition-colors ${isRetenu ? "bg-emerald-50/50" : "hover:bg-slate-50/70"}`}
+                  className={`relative flex flex-wrap sm:flex-nowrap items-center gap-3 sm:gap-4 p-4 sm:p-5 transition-colors cursor-pointer ${isRetenu ? "bg-emerald-50/50" : "hover:bg-slate-50/70"}`}
                 >
+                  {r.offer && (
+                    <Link
+                      to="/offres/$offerId"
+                      params={{ offerId: r.offer.id }}
+                      className="absolute inset-0 z-0"
+                    />
+                  )}
                   <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-base ${isRetenu ? "bg-emerald-100" : r.statut === "rejete" ? "bg-red-50" : r.statut === "entretien" ? "bg-blue-50" : "bg-primary/8"}`}
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-base relative z-10 pointer-events-none ${isRetenu ? "bg-emerald-100" : r.statut === "rejete" ? "bg-red-50" : r.statut === "entretien" ? "bg-blue-50" : "bg-primary/8"}`}
                   >
                     {statusEmoji}
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 relative z-10 pointer-events-none">
                     {r.offer ? (
-                      <Link
-                        to="/offres/$offerId"
-                        params={{ offerId: r.offer.id }}
-                        className="font-bold text-sm text-foreground hover:text-primary transition-colors block truncate"
+                      <div
+                        className="font-bold text-sm text-foreground group-hover:text-primary transition-colors block truncate"
                       >
                         {r.offer.titre}
-                      </Link>
+                      </div>
                     ) : (
                       <span className="font-bold text-sm text-muted-foreground">
                         Offre supprimée
@@ -256,17 +261,18 @@ function CandidatCandidatures() {
                       )}
                     </div>
                   </div>
-                  <span className={`badge-modern shrink-0 ${s.tone}`}>{s.label}</span>
-                  <span className="text-[11px] text-muted-foreground font-mono shrink-0 hidden sm:block">
+                  <span className={`badge-modern shrink-0 relative z-10 pointer-events-none ${s.tone}`}>{s.label}</span>
+                  <span className="text-[11px] text-muted-foreground font-mono shrink-0 hidden sm:block relative z-10 pointer-events-none">
                     {new Date(r.created_at).toLocaleDateString("fr-FR")}
                   </span>
-                  <div className="shrink-0">
+                  <div className="shrink-0 relative z-10">
                     {!closed ? (
                       <Button
                         variant="ghost"
                         size="sm"
                         className="h-8 px-3 text-xs text-red-500 hover:bg-red-50 hover:text-red-700 rounded-lg font-semibold"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setAppIdToRetire(r.id);
                           setConfirmOpen(true);
                         }}

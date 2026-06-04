@@ -87,12 +87,12 @@ export function PostulerDialog({
         }
       } catch (err) {
         console.warn("PostulerDialog initialization failed, falling back completely to mock:", err);
-        const mockCvs = getMockCvs("mock-candidate-1");
+        const mockCvs = getMockCvs(user.id);
         setCvs(mockCvs);
         if (mockCvs.length > 0) setCvId(mockCvs[0].id);
         const mockApps = getMockApplications();
         const found = mockApps.find(
-          (a) => a.candidate_id === "mock-candidate-1" && a.offer_id === offerId,
+          (a) => a.candidate_id === user.id && a.offer_id === offerId,
         );
         setAlreadyApplied(!!found);
       }
@@ -172,7 +172,7 @@ export function PostulerDialog({
                 </p>
               ) : (
                 <select
-                  className="bg-background border border-border rounded-sm px-3 py-2 text-sm"
+                  className="w-full h-10 px-3 py-2 border border-input bg-background rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm appearance-none bg-no-repeat bg-[right_0.75rem_center] bg-[length:1.25rem_1.25rem] bg-[image:url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%231d3a6c%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] pr-10 text-foreground shadow-sm hover:border-slate-400 cursor-pointer"
                   value={cvId}
                   onChange={(e) => setCvId(e.target.value)}
                 >
@@ -186,7 +186,7 @@ export function PostulerDialog({
             </div>
             <div className="grid gap-1.5">
               <Label className="text-xs font-mono uppercase tracking-widest text-muted-foreground">
-                Lettre de motivation (optionnel)
+                Lettre de motivation
               </Label>
               <Textarea
                 rows={6}

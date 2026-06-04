@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+﻿import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
@@ -25,7 +25,7 @@ type ReferentialRow = {
 
 function AdminReferentiels() {
   const { user } = useAuth();
-  const isMock = user?.id === "mock-admin-1";
+  const isMock = user?.id.startsWith("mock-");
 
   const [items, setItems] = useState<ReferentialRow[]>([]);
   const [loading, setLoading] = useState(true);

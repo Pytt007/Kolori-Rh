@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+﻿import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -79,7 +79,7 @@ function RecruteurCandidatures() {
         return;
       }
 
-      if (user.id === "mock-recruiter-1") {
+      if (user.id.startsWith("mock-")) {
         const { getMockJobOffers, getMockApplications } = await import("@/lib/mockData");
         const mockOffers = getMockJobOffers().filter((o) => o.company_id === company.id);
         const ids = mockOffers.map((o) => o.id);
@@ -198,7 +198,7 @@ function RecruteurCandidatures() {
   });
 
   async function setStatus(id: string, st: string) {
-    if (user?.id === "mock-recruiter-1") {
+    if (user?.id.startsWith("mock-")) {
       const { getMockApplications, saveMockApplication } = await import("@/lib/mockData");
       const apps = getMockApplications();
       const match = apps.find((a) => a.id === id);
@@ -229,7 +229,7 @@ function RecruteurCandidatures() {
       toast.info("Aucun CV joint.");
       return;
     }
-    if (user?.id === "mock-recruiter-1" || cvId.startsWith("cv-")) {
+    if (user?.id.startsWith("mock-") || cvId.startsWith("cv-")) {
       toast.success(
         `Téléchargement simulé pour le CV : ${cvId === "cv-1" ? "CV_Koffi_Anan_Directeur_RH.pdf" : "CV_Koffi_Anan_Consultant_Senior.pdf"}`,
       );
@@ -256,7 +256,7 @@ function RecruteurCandidatures() {
 
   async function saveNotes() {
     if (!active) return;
-    if (user?.id === "mock-recruiter-1") {
+    if (user?.id.startsWith("mock-")) {
       const { getMockApplications, saveMockApplication } = await import("@/lib/mockData");
       const apps = getMockApplications();
       const match = apps.find((a) => a.id === active.id);

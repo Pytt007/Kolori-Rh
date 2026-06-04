@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -52,6 +52,7 @@ const STATUS_CONFIG: Record<string, { bg: string; text: string; dot: string; bad
 function RecruteurOffres() {
   const { user } = useAuth();
   const [rows, setRows] = useState<Offer[]>([]);
+  const navigate = useNavigate();
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [companyStatus, setCompanyStatus] = useState<string | null>(null);
   const [counts, setCounts] = useState<Record<string, number>>({});
@@ -71,7 +72,7 @@ function RecruteurOffres() {
       setCompanyId(company.id);
       setCompanyStatus(company.statut);
 
-      if (user.id === "mock-recruiter-1") {
+      if (user.id.startsWith("mock-")) {
         const { getMockJobOffers, getMockApplications } = await import("@/lib/mockData");
         const mockOffers = getMockJobOffers().filter((o) => o.company_id === company.id);
         setRows(mockOffers);
@@ -131,7 +132,7 @@ function RecruteurOffres() {
   }, [user]);
 
   async function changeStatus(id: string, newStatus: "publiee" | "suspendue" | "brouillon") {
-    if (user?.id === "mock-recruiter-1") {
+    if (user?.id.startsWith("mock-")) {
       const { getMockJobOffers, saveMockJobOffer } = await import("@/lib/mockData");
       const mockOffers = getMockJobOffers();
       const offer = mockOffers.find((o) => o.id === id);
@@ -156,7 +157,7 @@ function RecruteurOffres() {
   }
 
   async function executeRemove(id: string) {
-    if (user?.id === "mock-recruiter-1") {
+    if (user?.id.startsWith("mock-")) {
       const { getMockJobOffers } = await import("@/lib/mockData");
       const mockOffers = getMockJobOffers();
       const list = mockOffers.filter((o) => o.id !== id);
@@ -354,19 +355,16 @@ function RecruteurOffres() {
               return (
                 <div
                   key={o.id}
-                  className="flex flex-wrap sm:flex-nowrap items-center gap-3 sm:gap-4 p-4 sm:p-5 hover:bg-slate-50/70 transition-colors group"
+                  className="relative flex flex-wrap sm:flex-nowrap items-center gap-3 sm:gap-4 p-4 sm:p-5 hover:bg-slate-50/70 transition-colors group cursor-pointer"
+                  onClick={() => navigate({ to: "/recruteur/offres/$offerId", params: { offerId: o.id } })}
                 >
                   {/* Status dot + title */}
                   <div className="flex items-start gap-3 flex-1 min-w-0">
                     <span className={`mt-1.5 w-2.5 h-2.5 rounded-full shrink-0 ${sc.dot}`} />
                     <div className="min-w-0">
-                      <Link
-                        to="/recruteur/offres/$offerId"
-                        params={{ offerId: o.id }}
-                        className="font-bold text-sm text-foreground hover:text-primary transition-colors block truncate"
-                      >
+                      <div className="font-bold text-sm text-foreground group-hover:text-primary transition-colors block truncate">
                         {o.titre}
-                      </Link>
+                      </div>
                       <div className="text-xs text-muted-foreground mt-0.5 flex flex-wrap items-center gap-1.5">
                         <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-mono font-bold uppercase">
                           {o.contrat}
@@ -400,7 +398,10 @@ function RecruteurOffres() {
                         variant="ghost"
                         className="h-8 px-2 text-emerald-600 hover:bg-emerald-50 rounded-lg"
                         title="Publier"
-                        onClick={() => changeStatus(o.id, "publiee")}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          changeStatus(o.id, "publiee");
+                        }}
                       >
                         <PlayCircle className="h-4 w-4" />
                       </Button>
@@ -411,7 +412,10 @@ function RecruteurOffres() {
                         variant="ghost"
                         className="h-8 px-2 text-amber-600 hover:bg-amber-50 rounded-lg"
                         title="Suspendre"
-                        onClick={() => changeStatus(o.id, "suspendue")}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          changeStatus(o.id, "suspendue");
+                        }}
                       >
                         <PauseCircle className="h-4 w-4" />
                       </Button>
@@ -419,20 +423,22 @@ function RecruteurOffres() {
                     <Button
                       size="sm"
                       variant="ghost"
-                      asChild
                       className="h-8 px-2 text-blue-600 hover:bg-blue-50 rounded-lg"
                       title="Éditer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate({ to: "/recruteur/offres/$offerId", params: { offerId: o.id } });
+                      }}
                     >
-                      <Link to="/recruteur/offres/$offerId" params={{ offerId: o.id }}>
-                        <Pencil className="h-4 w-4" />
-                      </Link>
+                      <Pencil className="h-4 w-4" />
                     </Button>
                     <Button
                       size="sm"
                       variant="ghost"
                       className="h-8 px-2 text-red-500 hover:bg-red-50 rounded-lg"
                       title="Supprimer"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         setOfferIdToDelete(o.id);
                         setOfferTitleToDelete(o.titre);
                         setConfirmOpen(true);

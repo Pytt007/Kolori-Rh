@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+﻿import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
@@ -26,11 +26,15 @@ type CompanyRow = {
   statut: "en_attente" | "validee" | "rejetee";
   owner_id: string;
   created_at: string;
+  registre_commerce?: string | null;
+  numero_fiscal?: string | null;
+  docs_complementaires?: string[] | null;
+  duplicate_alerts?: any[];
 };
 
 function AdminEntreprises() {
   const { user } = useAuth();
-  const isMock = user?.id === "mock-admin-1";
+  const isMock = user?.id.startsWith("mock-");
 
   const [companies, setCompanies] = useState<CompanyRow[]>([]);
   const [profiles, setProfiles] = useState<Record<string, ProfileLite>>({});
@@ -43,7 +47,33 @@ function AdminEntreprises() {
     // ── Mock mode ──────────────────────────────
     if (isMock) {
       const list = getMockAdminCompanies() as any as CompanyRow[];
-      setCompanies(list);
+      // Simulate duplicate alerts and mock docs
+      const enriched = list.map((c) => {
+        let alerts: any[] = [];
+        if (c.id === "company-2") {
+          alerts = [
+            {
+              id: "alert-1",
+              type: "duplicate_company",
+              ressource_id: c.id,
+              score: 85,
+              details: {
+                duplicate_with_id: "company-1",
+                duplicate_with_name: "Ivory Tech Solutions",
+                similarity_score: 85,
+              },
+            },
+          ];
+        }
+        return {
+          ...c,
+          registre_commerce: c.id === "company-1" ? "CI-ABJ-2015-B-1234" : "CI-ABJ-2015-B-5678",
+          numero_fiscal: c.id === "company-1" ? "1597531-M" : "9517536-A",
+          docs_complementaires: ["Registre_commerce_officiel.pdf"],
+          duplicate_alerts: alerts,
+        };
+      });
+      setCompanies(enriched);
       // Build mock profiles from MOCK_USERS
       const mockUsers = getMockUsers();
       const mockProfiles: Record<string, ProfileLite> = {};
@@ -64,7 +94,24 @@ function AdminEntreprises() {
 
       if (error) throw error;
 
-      const list = ((data as any) ?? []) as CompanyRow[];
+      // Load duplicate fraud alerts
+      const { data: alertsData } = await supabase
+        .from("fraud_alerts")
+        .select("*")
+        .eq("type", "duplicate_company");
+
+      const alertsMap: Record<string, any[]> = {};
+      (alertsData ?? []).forEach((alert) => {
+        const resId = alert.ressource_id;
+        if (!alertsMap[resId]) alertsMap[resId] = [];
+        alertsMap[resId].push(alert);
+      });
+
+      const list = ((data as any) ?? []).map((c: any) => ({
+        ...c,
+        duplicate_alerts: alertsMap[c.id] ?? []
+      })) as CompanyRow[];
+
       setCompanies(list);
 
       // Récupérer les profils des propriétaires (recruteurs)
@@ -380,6 +427,54 @@ function AdminEntreprises() {
                     )}
                   </div>
                 </div>
+
+                {/* Verification details */}
+                <div className="mt-4 p-3 bg-slate-50 border border-slate-200/80 rounded-xl grid sm:grid-cols-3 gap-3 text-xs">
+                  <div>
+                    <span className="font-semibold text-slate-500 block">Registre de Commerce :</span>
+                    <span className="font-mono text-slate-800 font-bold">{c.registre_commerce || "Non renseigné"}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-slate-500 block">Numéro Fiscal :</span>
+                    <span className="font-mono text-slate-800 font-bold">{c.numero_fiscal || "Non renseigné"}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-slate-500 block">Pièces Jointes :</span>
+                    {c.docs_complementaires && c.docs_complementaires.length > 0 ? (
+                      <div className="flex flex-col gap-1 mt-0.5">
+                        {c.docs_complementaires.map((doc, idx) => {
+                          const docName = doc.includes("/") ? doc.split("/").pop() || "Document" : doc;
+                          return (
+                            <a
+                              key={idx}
+                              href={doc.startsWith("http") ? doc : "#"}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-[#059669] hover:underline font-bold truncate flex items-center gap-1"
+                            >
+                              📄 {docName}
+                            </a>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <span className="text-slate-400 italic">Aucun justificatif</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Duplicate alerts */}
+                {c.duplicate_alerts && c.duplicate_alerts.length > 0 && (
+                  <div className="mt-3 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 space-y-1.5 animate-pulse">
+                    <span className="font-bold flex items-center gap-1">
+                      ⚠️ Alerte Doublon Détecté ({c.duplicate_alerts[0].score}% de similarité)
+                    </span>
+                    <p>
+                      Cette entreprise partage des informations suspectes de ressemblance avec{" "}
+                      <strong>{c.duplicate_alerts[0].details.duplicate_with_name}</strong>. Veuillez vérifier la conformité des justificatifs.
+                    </p>
+                  </div>
+                )}
 
                 {c.description && (
                   <div className="mt-4 pt-4 border-t border-white/60 text-sm text-muted-foreground leading-relaxed whitespace-pre-line">

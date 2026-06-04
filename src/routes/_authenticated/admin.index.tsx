@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+﻿import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
@@ -69,7 +69,7 @@ const PIE_COLORS = ["#1c305c", "#9c1c1e", "#3b5284", "#cbd5e1"];
 
 function AdminDashboard() {
   const { user } = useAuth();
-  const isMock = user?.id === "mock-admin-1";
+  const isMock = user?.id.startsWith("mock-");
 
   const [stats, setStats] = useState<StatsType>({
     candidates: 0,

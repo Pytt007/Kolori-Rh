@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+﻿import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { displayName, fetchProfilesByIds, type ProfileLite } from "@/lib/recruiter";
@@ -41,7 +41,7 @@ function CVtheque() {
   async function loadData() {
     if (!user) return;
     try {
-      if (user.id === "mock-recruiter-1") {
+      if (user.id.startsWith("mock-")) {
         // Mock candidates for demo mode
         const mockCandidates: Candidate[] = [
           {
@@ -226,7 +226,7 @@ function CVtheque() {
     const isFav = favorites.includes(candidateId);
 
     // Handle mock mode - just update local state
-    if (user.id === "mock-recruiter-1") {
+    if (user.id.startsWith("mock-")) {
       if (isFav) {
         setFavorites(favorites.filter((id) => id !== candidateId));
         toast.success("Candidat retiré des favoris.");
@@ -281,10 +281,28 @@ function CVtheque() {
 
   return (
     <>
-      <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-3">
-        Recherche
+      {/* ── Hero Header ─────────────────────────────────────────────────── */}
+      <div className="page-hero page-hero-recruteur animate-reveal mb-8">
+        <div
+          className="page-hero-blob"
+          style={{ width: 280, height: 280, background: "#059669", top: -100, right: -80 }}
+        />
+        <div
+          className="page-hero-blob"
+          style={{ width: 160, height: 160, background: "#34D399", bottom: -60, left: 40 }}
+        />
+        <div className="hero-content">
+          <div className="dash-section-title" style={{ color: "rgba(255,255,255,0.6)" }}>
+            Recherche
+          </div>
+          <h1 className="font-display font-black text-3xl sm:text-4xl text-white mb-2">
+            CVthèque
+          </h1>
+          <p className="text-white/70 text-xs mt-1">
+            Parcourez la base de profils qualifiés et trouvez vos futurs collaborateurs.
+          </p>
+        </div>
       </div>
-      <h1 className="font-display italic text-5xl mb-10">CVthèque.</h1>
 
       <div className="grid sm:grid-cols-2 gap-3 mb-8">
         <Input

@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+﻿import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -57,7 +57,7 @@ function NouvelleOffre() {
       <OfferForm
         submitLabel="Enregistrer en brouillon"
         onSubmit={async (v) => {
-          if (user?.id === "mock-recruiter-1") {
+          if (user?.id.startsWith("mock-")) {
             const { getMockJobOffers, saveMockJobOffer } = await import("@/lib/mockData");
             const newOffer = {
               id: `offer-${Date.now()}`,

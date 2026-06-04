@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+﻿import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
@@ -26,11 +26,12 @@ type OfferRow = {
   statut: "brouillon" | "publiee" | "suspendue" | "expiree";
   created_at: string;
   company: { nom: string } | null;
+  risk_score?: number;
 };
 
 function AdminOffres() {
   const { user } = useAuth();
-  const isMock = user?.id === "mock-admin-1";
+  const isMock = user?.id.startsWith("mock-");
 
   const [offers, setOffers] = useState<OfferRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,6 +39,7 @@ function AdminOffres() {
   const [offerToDelete, setOfferToDelete] = useState<{ id: string; title: string } | null>(null);
   const [filterQuery, setFilterQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [riskFilter, setRiskFilter] = useState<string>("all");
 
   async function loadOffers() {
     if (!user) return;
@@ -45,10 +47,17 @@ function AdminOffres() {
     if (isMock) {
       const mockOffers = getMockJobOffers();
       const mockCompanies = getMockAdminCompanies();
-      const enriched = mockOffers.map((o) => ({
-        ...o,
-        company: { nom: mockCompanies.find((c) => c.id === o.company_id)?.nom ?? "Entreprise" },
-      })) as any as OfferRow[];
+      const enriched = mockOffers.map((o) => {
+        let rScore = 12;
+        if (o.description.length < 150) rScore += 35;
+        if (o.titre.toLowerCase().includes("senior") || o.titre.toLowerCase().includes("react")) rScore += 45;
+        if (o.titre.toLowerCase().includes("directeur")) rScore = 15;
+        return {
+          ...o,
+          risk_score: rScore,
+          company: { nom: mockCompanies.find((c) => c.id === o.company_id)?.nom ?? "Entreprise" },
+        };
+      }) as any as OfferRow[];
       setOffers(enriched);
       setLoading(false);
       return;
@@ -74,7 +83,24 @@ function AdminOffres() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setOffers(((data as any) ?? []) as OfferRow[]);
+
+      // Load risk scores
+      const { data: alerts } = await supabase
+        .from("fraud_alerts")
+        .select("ressource_id, score")
+        .eq("type", "suspicious_offer");
+
+      const alertsMap = (alerts ?? []).reduce((acc, curr) => {
+        acc[curr.ressource_id] = curr.score;
+        return acc;
+      }, {} as Record<string, number>);
+
+      const enriched = ((data as any) ?? []).map((o: any) => ({
+        ...o,
+        risk_score: alertsMap[o.id] ?? 0
+      }));
+
+      setOffers(enriched);
     } catch (err) {
       console.error(err);
       toast.error("Impossible de charger les offres.");
@@ -146,7 +172,14 @@ function AdminOffres() {
       o.titre.toLowerCase().includes(filterQuery.toLowerCase()) ||
       (o.company?.nom ?? "").toLowerCase().includes(filterQuery.toLowerCase());
     const matchesStatus = statusFilter === "all" || o.statut === statusFilter;
-    return matchesSearch && matchesStatus;
+
+    let matchesRisk = true;
+    const r = o.risk_score ?? 0;
+    if (riskFilter === "high") matchesRisk = r >= 60;
+    else if (riskFilter === "medium") matchesRisk = r >= 30 && r < 60;
+    else if (riskFilter === "low") matchesRisk = r < 30;
+
+    return matchesSearch && matchesStatus && matchesRisk;
   });
 
   if (loading)
@@ -247,6 +280,17 @@ function AdminOffres() {
             <option value="suspendue">Suspendues</option>
             <option value="expiree">Expirées</option>
           </select>
+
+          <select
+            className="bg-slate-50 border border-border/60 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 shrink-0"
+            value={riskFilter}
+            onChange={(e) => setRiskFilter(e.target.value)}
+          >
+            <option value="all">Tous niveaux de risque</option>
+            <option value="high">Risque élevé (≥ 60%)</option>
+            <option value="medium">Risque modéré (30%-59%)</option>
+            <option value="low">Risque faible (&lt; 30%)</option>
+          </select>
         </div>
       </div>
 
@@ -269,6 +313,7 @@ function AdminOffres() {
                   <th>Offre / Entreprise</th>
                   <th>Contrat / Ville</th>
                   <th>Date de création</th>
+                  <th>Score de risque</th>
                   <th>Statut</th>
                   <th style={{ textAlign: "right" }}>Actions</th>
                 </tr>
@@ -312,6 +357,21 @@ function AdminOffres() {
                       </td>
                       <td className="text-xs font-mono text-muted-foreground">
                         {new Date(o.created_at).toLocaleDateString("fr-FR")}
+                      </td>
+                      <td>
+                        {o.risk_score !== undefined ? (
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold font-mono ${
+                            o.risk_score >= 60
+                              ? "bg-rose-100 text-rose-800 border border-rose-200"
+                              : o.risk_score >= 30
+                              ? "bg-amber-100 text-amber-800 border border-amber-200"
+                              : "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                          }`}>
+                            🛡️ {o.risk_score}%
+                          </span>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
                       </td>
                       <td>
                         <span className={`badge-modern ${s.tone}`}>{s.label}</span>

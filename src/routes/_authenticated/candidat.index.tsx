@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+﻿import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
@@ -71,7 +71,7 @@ function CandidatDashboard() {
       try {
         const candidateId = await ensureCandidate(user.id);
 
-        if (user.id === "mock-candidate-1") {
+        if (user.id.startsWith("mock-")) {
           const mockApps = getMockApplications().filter((a) => a.candidate_id === candidateId);
           const mockOffers = getMockJobOffers();
           const mockCvs = getMockCvs(candidateId);
@@ -148,9 +148,9 @@ function CandidatDashboard() {
         setStats({ cvs: cvs ?? 0, candidatures: total ?? 0, entretiens: entretiens ?? 0 });
       } catch (err) {
         console.warn("Dashboard stats failed, using mock fallback:", err);
-        const mockApps = getMockApplications().filter((a) => a.candidate_id === "mock-candidate-1");
+        const mockApps = getMockApplications().filter((a) => a.candidate_id === user.id);
         const mockOffers = getMockJobOffers();
-        const mockCvs = getMockCvs("mock-candidate-1");
+        const mockCvs = getMockCvs(user.id);
         const recentMapped = mockApps.slice(0, 5).map((a) => {
           const offer = mockOffers.find((o) => o.id === a.offer_id);
           return {
@@ -364,7 +364,7 @@ function CandidatDashboard() {
               to="/offres"
               className="text-xs text-primary font-bold mt-2 inline-block hover:underline"
             >
-              Parcourir les offres â†’
+              Parcourir les offres →
             </Link>
           </div>
         ) : (
@@ -377,12 +377,19 @@ function CandidatDashboard() {
               return (
                 <div
                   key={a.id}
-                  className="flex items-center gap-3 p-3.5 rounded-xl hover:bg-slate-50 transition-colors group"
+                  className="relative flex items-center gap-3 p-3.5 rounded-xl hover:bg-slate-50 transition-colors group cursor-pointer"
                 >
-                  <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                  {a.offer && (
+                    <Link
+                      to="/offres/$offerId"
+                      params={{ offerId: a.offer.id }}
+                      className="absolute inset-0 z-0"
+                    />
+                  )}
+                  <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 relative z-10 pointer-events-none">
                     <Briefcase className="h-4 w-4 text-primary" />
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 relative z-10 pointer-events-none">
                     <div className="font-bold text-sm text-foreground truncate">
                       {a.offer?.titre ?? "Offre supprimée"}
                     </div>
@@ -392,23 +399,19 @@ function CandidatDashboard() {
                           {a.offer.contrat}
                         </span>
                       )}
-                      {a.offer?.contrat && <span>Â·</span>}
+                      {a.offer?.contrat && <span>·</span>}
                       <span>{new Date(a.created_at).toLocaleDateString("fr-FR")}</span>
                     </div>
                   </div>
                   <span
-                    className={`hidden sm:inline-flex text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shrink-0 ${s.tone}`}
+                    className={`hidden sm:inline-flex text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shrink-0 relative z-10 pointer-events-none ${s.tone}`}
                   >
                     {s.label}
                   </span>
                   {a.offer && (
-                    <Link
-                      to="/offres/$offerId"
-                      params={{ offerId: a.offer.id }}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
-                    >
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0 relative z-10 pointer-events-none">
                       <ChevronRight className="h-4 w-4 text-primary" />
-                    </Link>
+                    </div>
                   )}
                 </div>
               );

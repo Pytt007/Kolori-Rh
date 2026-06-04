@@ -9,7 +9,9 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "supabase:link": "supabase link --project-ref pogutephihcqruvwihbc",
+    "supabase:push": "supabase db push"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

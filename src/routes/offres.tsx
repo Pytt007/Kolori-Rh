@@ -157,7 +157,7 @@ function OffresPage() {
                   value={contrat || "all"}
                   onValueChange={(val) => setContrat(val === "all" ? "" : val)}
                 >
-                  <SelectTrigger className="border-none shadow-none focus:ring-0 focus:ring-offset-0 bg-transparent text-sm font-semibold p-0 w-full cursor-pointer h-auto text-black flex items-center justify-between">
+                  <SelectTrigger className="border-none shadow-none focus:ring-0 focus:ring-offset-0 bg-transparent text-sm font-semibold py-0.5 px-0 w-full cursor-pointer h-7 text-black flex items-center justify-between">
                     <SelectValue placeholder="Tous Contrats" />
                   </SelectTrigger>
                   <SelectContent className="bg-white border border-border rounded-xl shadow-lg">

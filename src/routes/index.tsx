@@ -278,76 +278,96 @@ function Index() {
         {/* Right Services Grid */}
         <div className="lg:col-span-7 grid sm:grid-cols-2 gap-6 animate-reveal [animation-delay:100ms]">
           {/* Card 1 */}
-          <div className="bg-white p-8 border border-border rounded-2xl hover:shadow-xl hover:border-primary/20 transition-all group">
-            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary mb-6 transition-transform group-hover:scale-110">
-              <Users className="w-6 h-6" />
-            </div>
-            <h3 className="font-display font-bold text-lg mb-2">Recrutement de Cadres</h3>
-            <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-              Identification et sélection de leaders hautement qualifiés pour guider votre
-              structure.
-            </p>
+          <div className="relative bg-white p-8 border border-border rounded-2xl hover:shadow-xl hover:border-primary/20 transition-all group cursor-pointer">
             <Link
               to="/services/$serviceId"
               params={{ serviceId: "chasse-de-tetes" }}
-              className="text-xs font-semibold text-primary inline-flex items-center gap-1 hover:underline"
-            >
-              En savoir plus <ArrowUpRight className="w-3.5 h-3.5" />
-            </Link>
+              className="absolute inset-0 z-0"
+            />
+            <div className="relative z-10 pointer-events-none w-full h-full flex flex-col justify-between">
+              <div>
+                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary mb-6 transition-transform group-hover:scale-110">
+                  <Users className="w-6 h-6" />
+                </div>
+                <h3 className="font-display font-bold text-lg mb-2">Recrutement de Cadres</h3>
+                <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+                  Identification et sélection de leaders hautement qualifiés pour guider votre
+                  structure.
+                </p>
+              </div>
+              <span className="text-xs font-semibold text-primary inline-flex items-center gap-1 group-hover:underline">
+                En savoir plus <ArrowUpRight className="w-3.5 h-3.5" />
+              </span>
+            </div>
           </div>
 
           {/* Card 2 */}
-          <div className="bg-white p-8 border border-border rounded-2xl hover:shadow-xl hover:border-primary/20 transition-all group">
-            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary mb-6 transition-transform group-hover:scale-110">
-              <Briefcase className="w-6 h-6" />
-            </div>
-            <h3 className="font-display font-bold text-lg mb-2">Administration des RH</h3>
-            <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-              Gestion de la paie, conformité légale et contrats pour simplifier votre quotidien RH.
-            </p>
+          <div className="relative bg-white p-8 border border-border rounded-2xl hover:shadow-xl hover:border-primary/20 transition-all group cursor-pointer">
             <Link
               to="/services/$serviceId"
               params={{ serviceId: "gestion-de-la-paie" }}
-              className="text-xs font-semibold text-primary inline-flex items-center gap-1 hover:underline"
-            >
-              En savoir plus <ArrowUpRight className="w-3.5 h-3.5" />
-            </Link>
+              className="absolute inset-0 z-0"
+            />
+            <div className="relative z-10 pointer-events-none w-full h-full flex flex-col justify-between">
+              <div>
+                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary mb-6 transition-transform group-hover:scale-110">
+                  <Briefcase className="w-6 h-6" />
+                </div>
+                <h3 className="font-display font-bold text-lg mb-2">Administration des RH</h3>
+                <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+                  Gestion de la paie, conformité légale et contrats pour simplifier votre quotidien RH.
+                </p>
+              </div>
+              <span className="text-xs font-semibold text-primary inline-flex items-center gap-1 group-hover:underline">
+                En savoir plus <ArrowUpRight className="w-3.5 h-3.5" />
+              </span>
+            </div>
           </div>
 
           {/* Card 3 */}
-          <div className="bg-white p-8 border border-border rounded-2xl hover:shadow-xl hover:border-primary/20 transition-all group">
-            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary mb-6 transition-transform group-hover:scale-110">
-              <Settings className="w-6 h-6" />
-            </div>
-            <h3 className="font-display font-bold text-lg mb-2">Systèmes RH</h3>
-            <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-              Mise en œuvre d'outils et SIRH modernes pour piloter la performance de vos équipes.
-            </p>
+          <div className="relative bg-white p-8 border border-border rounded-2xl hover:shadow-xl hover:border-primary/20 transition-all group cursor-pointer">
             <Link
               to="/services/$serviceId"
               params={{ serviceId: "systemes-rh" }}
-              className="text-xs font-semibold text-primary inline-flex items-center gap-1 hover:underline"
-            >
-              En savoir plus <ArrowUpRight className="w-3.5 h-3.5" />
-            </Link>
+              className="absolute inset-0 z-0"
+            />
+            <div className="relative z-10 pointer-events-none w-full h-full flex flex-col justify-between">
+              <div>
+                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary mb-6 transition-transform group-hover:scale-110">
+                  <Settings className="w-6 h-6" />
+                </div>
+                <h3 className="font-display font-bold text-lg mb-2">Systèmes RH</h3>
+                <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+                  Mise en œuvre d'outils et SIRH modernes pour piloter la performance de vos équipes.
+                </p>
+              </div>
+              <span className="text-xs font-semibold text-primary inline-flex items-center gap-1 group-hover:underline">
+                En savoir plus <ArrowUpRight className="w-3.5 h-3.5" />
+              </span>
+            </div>
           </div>
 
           {/* Card 4 */}
-          <div className="bg-white p-8 border border-border rounded-2xl hover:shadow-xl hover:border-primary/20 transition-all group">
-            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary mb-6 transition-transform group-hover:scale-110">
-              <Scale className="w-6 h-6" />
-            </div>
-            <h3 className="font-display font-bold text-lg mb-2">Droit du Travail</h3>
-            <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-              Conseils réglementaires et veille juridique pour sécuriser vos démarches sociales.
-            </p>
+          <div className="relative bg-white p-8 border border-border rounded-2xl hover:shadow-xl hover:border-primary/20 transition-all group cursor-pointer">
             <Link
               to="/services/$serviceId"
               params={{ serviceId: "droit-du-travail" }}
-              className="text-xs font-semibold text-primary inline-flex items-center gap-1 hover:underline"
-            >
-              En savoir plus <ArrowUpRight className="w-3.5 h-3.5" />
-            </Link>
+              className="absolute inset-0 z-0"
+            />
+            <div className="relative z-10 pointer-events-none w-full h-full flex flex-col justify-between">
+              <div>
+                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary mb-6 transition-transform group-hover:scale-110">
+                  <Scale className="w-6 h-6" />
+                </div>
+                <h3 className="font-display font-bold text-lg mb-2">Droit du Travail</h3>
+                <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+                  Conseils réglementaires et veille juridique pour sécuriser vos démarches sociales.
+                </p>
+              </div>
+              <span className="text-xs font-semibold text-primary inline-flex items-center gap-1 group-hover:underline">
+                En savoir plus <ArrowUpRight className="w-3.5 h-3.5" />
+              </span>
+            </div>
           </div>
         </div>
       </section>

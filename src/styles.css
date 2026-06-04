@@ -321,3 +321,28 @@
   color: hsl(219 51% 45%);
   margin-bottom: 0.4rem;
 }
+
+/* ── Modern Scrollbars ─────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.03);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(28, 48, 92, 0.2); /* primary color transparent */
+  border-radius: 9999px;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(28, 48, 92, 0.55); /* primary color visible on hover */
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(28, 48, 92, 0.2) rgba(15, 23, 42, 0.03);
+}
+

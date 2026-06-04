@@ -1,4 +1,4 @@
-import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+﻿import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/integrations/supabase/client";
@@ -82,6 +82,13 @@ export function DashboardShell({
 
   const [displayNameState, setDisplayNameState] = useState("");
   const [photoUrlState, setPhotoUrlState] = useState<string | null>(null);
+
+  const getFirstName = () => {
+    if (!displayNameState) return "";
+    if (displayNameState.includes("@")) return "";
+    return displayNameState.split(" ")[0];
+  };
+  const greeting = getFirstName() ? `Bonjour, ${getFirstName()} !` : "Bonjour !";
 
   // Search
   const [searchQuery, setSearchQuery] = useState("");
@@ -218,12 +225,12 @@ export function DashboardShell({
       import("@/lib/mockData").then(({ getMockUsers }) => {
         const found = getMockUsers().find((u) => u.id === user.id);
         if (found) {
-          if (user.id === "mock-candidate-1") {
+          if (user.id.startsWith("mock-")) {
             setDisplayNameState(
               `${localStorage.getItem("mock_candidate_prenom") || found.prenom} ${localStorage.getItem("mock_candidate_nom") || found.nom}`,
             );
             setPhotoUrlState(localStorage.getItem("mock_candidate_photo"));
-          } else if (user.id === "mock-recruiter-1") {
+          } else if (user.id.startsWith("mock-")) {
             setDisplayNameState(`${found.prenom} ${found.nom}`);
             setPhotoUrlState(localStorage.getItem("mock_recruiter_logo"));
           } else {
@@ -355,8 +362,8 @@ export function DashboardShell({
                 />
               </Link>
             </div>
-            <div className="text-[10px] font-mono uppercase tracking-widest text-white/50 mb-5">
-              {title}
+            <div className="text-[11px] font-bold text-white/70 mb-5 tracking-wide animate-reveal">
+              {greeting}
             </div>
             {/* Nav links */}
             <nav className="flex flex-col gap-2">
@@ -511,7 +518,7 @@ export function DashboardShell({
               )}
             </div>
           </header>
-          <main className="flex-1 bg-white border border-border/60 rounded-3xl p-6 md:p-8 shadow-sm">
+          <main className="flex-1 bg-transparent p-0">
             {children}
           </main>
         </div>
@@ -536,9 +543,9 @@ export function DashboardShell({
             />
           </Link>
 
-          {/* Page title */}
-          <span className="text-[11px] font-mono uppercase tracking-widest text-white/60 flex-1 text-center truncate">
-            {title}
+          {/* Page title / Greeting */}
+          <span className="text-[11px] font-mono uppercase tracking-widest text-white/60 flex-1 text-center truncate animate-reveal">
+            {greeting}
           </span>
 
           {/* Actions */}
