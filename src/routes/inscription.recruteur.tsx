@@ -311,7 +311,7 @@ function InscriptionRecruteurPage() {
       {step === 1 && (
         <form onSubmit={handleStep1Next} className="space-y-4">
           {/* Prénom & Nom */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label htmlFor="prenom" className="block text-xs font-semibold text-foreground mb-1.5">
                 Prénom *
@@ -508,7 +508,7 @@ function InscriptionRecruteurPage() {
           </div>
 
           {/* Pays & Ville */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label htmlFor="pays" className="block text-xs font-semibold text-foreground mb-1.5">
                 Pays *

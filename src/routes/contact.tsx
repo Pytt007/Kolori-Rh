@@ -56,7 +56,7 @@ function ContactPage() {
               onSubmit={handleSubmit}
               className="space-y-4 bg-white border border-border p-6 md:p-8 rounded-3xl shadow-sm"
             >
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="prenom" className="font-semibold text-xs text-muted-foreground">
                     Prénom

@@ -504,7 +504,7 @@ function InscriptionCandidatPage() {
       {step === 1 && (
         <form onSubmit={handleStep1Next} className="space-y-4">
           {/* Prénom & Nom */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label htmlFor="prenom" className="block text-xs font-semibold text-foreground mb-1.5">
                 Prénom *
@@ -542,7 +542,7 @@ function InscriptionCandidatPage() {
           </div>
 
           {/* Téléphone & Ville */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label htmlFor="telephone" className="block text-xs font-semibold text-foreground mb-1.5">
                 Téléphone *
@@ -880,7 +880,7 @@ function InscriptionCandidatPage() {
           </div>
 
           {/* Langues & Certifications */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label htmlFor="langues" className="block text-xs font-semibold text-foreground mb-1.5">
                 Langues (Niveau)
@@ -916,7 +916,7 @@ function InscriptionCandidatPage() {
           </div>
 
           {/* Centres d'intérêt & Salaire */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label htmlFor="interets" className="block text-xs font-semibold text-foreground mb-1.5">
                 Centres d'intérêt
@@ -956,7 +956,7 @@ function InscriptionCandidatPage() {
             <label className="block text-xs font-semibold text-foreground mb-1.5">
               Mobilité géographique & Télétravail
             </label>
-            <div className="grid grid-cols-3 gap-3 p-3 border border-border bg-[#f8fafc] rounded-xl">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 border border-border bg-[#f8fafc] rounded-xl">
               <label className="flex items-center gap-2 text-xs font-bold text-muted-foreground cursor-pointer select-none">
                 <Checkbox
                   checked={mobiliteDemenagement}

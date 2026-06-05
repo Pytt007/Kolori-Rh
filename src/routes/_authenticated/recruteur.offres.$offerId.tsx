@@ -12,6 +12,8 @@ import { APPLICATION_STATUS_LABELS } from "@/lib/candidate";
 import { OfferForm, serializeOffer } from "@/components/site/OfferForm";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/site/ConfirmDialog";
+import { AIDashboardDialog } from "@/components/site/AIDashboardDialog";
+import { Brain } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/recruteur/offres/$offerId")({
   component: EditOffre,
@@ -59,11 +61,14 @@ function EditOffre() {
   const [apps, setApps] = useState<App[]>([]);
   const [profiles, setProfiles] = useState<Record<string, ProfileLite>>({});
   const [loading, setLoading] = useState(true);
+  const [aiDialogOpen, setAiDialogOpen] = useState(false);
+  const [isMockUser, setIsMockUser] = useState(false);
 
   async function load() {
     const mockUserStr =
       typeof window !== "undefined" ? localStorage.getItem("mock_auth_user") : null;
     const isMock = mockUserStr ? JSON.parse(mockUserStr).id.startsWith("mock-") : false;
+    setIsMockUser(isMock);
 
     if (isMock) {
       const { getMockJobOffers, getMockApplications } = await import("@/lib/mockData");
@@ -242,6 +247,21 @@ function EditOffre() {
         </div>
       </div>
 
+      {/* Barre action IA — n'affecte pas le design existant */}
+      <div className="flex items-center gap-3 mb-6 -mt-4">
+        <button
+          type="button"
+          onClick={() => setAiDialogOpen(true)}
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-border/60 shadow-sm text-sm font-bold text-[#059669] hover:bg-emerald-50 hover:border-emerald-200 transition-all"
+        >
+          <Brain className="h-4 w-4" />
+          Analyse IA des candidats
+          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 ml-1">
+            {apps.length} profil{apps.length !== 1 ? "s" : ""}
+          </span>
+        </button>
+      </div>
+
       <OfferForm
         submitLabel="Enregistrer les modifications"
         initial={{
@@ -358,6 +378,34 @@ function EditOffre() {
         cancelText="Annuler"
         variant="destructive"
       />
+
+      {/* ── Assistant IA de présélection ──────────────────────── */}
+      {offer && (
+        <AIDashboardDialog
+          open={aiDialogOpen}
+          onClose={() => setAiDialogOpen(false)}
+          isMockUser={isMockUser}
+          offer={{
+            id: offerId,
+            titre: offer.titre,
+            description: offer.description,
+            secteur: offer.secteur,
+            contrat: offer.contrat,
+            localisation: offer.localisation,
+            competences_requises: offer.competences_requises ?? [],
+            competences_souhaitees: offer.competences_souhaitees ?? [],
+            experience_min: offer.experience_min,
+            niveau_etudes_min: offer.niveau_etudes_min,
+            langues_souhaitees: offer.langues_souhaitees ?? [],
+            criteres_ia: offer.criteres_ia,
+          }}
+          applicantsRaw={apps.map((a) => ({
+            candidateId: a.candidate?.id ?? "",
+            applicationId: a.id,
+            cvId: null,
+          }))}
+        />
+      )}
     </>
   );
 }

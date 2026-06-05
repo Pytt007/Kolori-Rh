@@ -1,4 +1,4 @@
-﻿import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -170,7 +170,7 @@ function RecruteurEntreprise() {
           .maybeSingle();
 
         if (companyData) {
-          const nets = companyData.networks || {};
+          const nets = (companyData.networks as Record<string, string> | null) || {};
           setCompany({
             id: companyData.id,
             nom: companyData.nom || "",
@@ -941,12 +941,12 @@ function RecruteurEntreprise() {
         </div>
 
         {/* STICKY FLOATING ACTION BAR FOR SAVING */}
-        <div className="sticky bottom-4 z-40 bg-white/90 backdrop-blur-md border border-border/80 p-4 px-6 rounded-2xl shadow-xl flex items-center justify-between gap-4 mt-12 animate-reveal">
-          <div className="text-xs text-muted-foreground flex items-center gap-2 font-medium">
+        <div className="sticky bottom-4 z-40 bg-white/95 backdrop-blur-md border border-border/80 p-4 px-6 rounded-2xl shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-12 animate-reveal">
+          <div className="text-xs text-muted-foreground flex items-center gap-2 font-medium justify-center sm:justify-start">
             <AlertCircle className="h-4.5 w-4.5 text-[#059669] shrink-0" />
             <span>N'oubliez pas d'enregistrer vos modifications.</span>
           </div>
-          <Button type="submit" disabled={saving} className="bg-[#059669] hover:bg-[#059669]/90 rounded-xl px-8 shadow-md h-11 text-xs font-semibold">
+          <Button type="submit" disabled={saving} className="bg-[#059669] hover:bg-[#059669]/90 rounded-xl w-full sm:w-auto px-8 shadow-md h-11 text-xs font-semibold">
             {saving ? "Sauvegarde en cours..." : "Enregistrer les modifications"}
           </Button>
         </div>

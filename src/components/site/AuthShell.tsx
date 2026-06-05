@@ -67,20 +67,20 @@ export function AuthShell({
   return (
     <div className="min-h-screen flex bg-[#f4f5f7]">
       {/* ── Left: Form Panel ── */}
-      <div className="relative flex flex-col justify-center w-full md:w-1/2 px-8 py-12 md:px-16 lg:px-24 bg-white">
+      <div className="relative flex flex-col justify-center w-full md:w-1/2 px-6 sm:px-8 py-12 md:px-16 lg:px-24 bg-white">
         {/* Back button to home */}
         <Link
           to="/"
-          className="absolute top-6 left-6 md:top-8 md:left-8 flex items-center justify-center w-10 h-10 rounded-full bg-white border border-border shadow-sm hover:shadow-md text-foreground hover:text-primary hover:border-primary/30 transition-all duration-300 group cursor-pointer"
+          className="absolute top-4 left-4 md:top-8 md:left-8 flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white border border-border shadow-sm hover:shadow-md text-foreground hover:text-primary hover:border-primary/30 transition-all duration-300 group cursor-pointer z-10"
           title="Retour à l'accueil"
         >
-          <ArrowLeft className="h-5 w-5 transform group-hover:-translate-x-0.5 transition-transform text-foreground group-hover:text-primary" />
+          <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 transform group-hover:-translate-x-0.5 transition-transform text-foreground group-hover:text-primary" />
         </Link>
 
         <div className="w-full max-w-md mx-auto">
-          {/* Logo */}
-          <Link to="/" className="inline-flex items-center gap-2 mb-10 group">
-            <img src="/logo.png" alt="Kolori RH" className="h-24 object-contain" />
+          {/* Logo — extra top margin on mobile to clear the back button */}
+          <Link to="/" className="flex justify-center md:inline-flex items-center gap-2 mt-14 md:mt-0 mb-8 md:mb-10 group">
+            <img src="/logo.png" alt="Kolori RH" className="h-16 sm:h-20 md:h-24 object-contain" />
           </Link>
 
           {/* Eyebrow + Title */}

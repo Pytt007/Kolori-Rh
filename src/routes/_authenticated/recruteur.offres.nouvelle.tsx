@@ -1,4 +1,4 @@
-﻿import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -80,6 +80,37 @@ function NouvelleOffre() {
             return;
           }
           toast.success("Offre créée en brouillon.");
+          navigate({ to: "/recruteur/offres" });
+        }}
+        onPublish={async (v) => {
+          if (user?.id.startsWith("mock-")) {
+            const { getMockJobOffers, saveMockJobOffer } = await import("@/lib/mockData");
+            const newOffer = {
+              id: `offer-${Date.now()}`,
+              ...serializeOffer(v),
+              company_id: companyId,
+              statut: "publiee",
+              created_at: new Date().toISOString(),
+              publiee_le: new Date().toISOString(),
+            };
+            saveMockJobOffer(newOffer as any);
+            toast.success("Offre publiée (simulation).");
+            navigate({ to: "/recruteur/offres" });
+            return;
+          }
+          const { error } = await supabase
+            .from("job_offers")
+            .insert({
+              ...serializeOffer(v),
+              company_id: companyId,
+              statut: "publiee",
+              publiee_le: new Date().toISOString(),
+            });
+          if (error) {
+            toast.error(error.message);
+            return;
+          }
+          toast.success("Offre publiée avec succès.");
           navigate({ to: "/recruteur/offres" });
         }}
       />

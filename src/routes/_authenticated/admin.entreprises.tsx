@@ -1,4 +1,4 @@
-﻿import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
@@ -94,14 +94,14 @@ function AdminEntreprises() {
 
       if (error) throw error;
 
-      // Load duplicate fraud alerts
-      const { data: alertsData } = await supabase
+      // Load duplicate fraud alerts (fraud_alerts table not in generated types, cast to any)
+      const { data: alertsData } = await (supabase as any)
         .from("fraud_alerts")
         .select("*")
         .eq("type", "duplicate_company");
 
       const alertsMap: Record<string, any[]> = {};
-      (alertsData ?? []).forEach((alert) => {
+      ((alertsData as any[]) ?? []).forEach((alert: any) => {
         const resId = alert.ressource_id;
         if (!alertsMap[resId]) alertsMap[resId] = [];
         alertsMap[resId].push(alert);

@@ -55,31 +55,43 @@ export function usePWA(): PWAState {
 
     // ── Service Worker registration ──────────────────────────────────────
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker
-        .register("/sw.js", { scope: "/" })
-        .then((reg) => {
-          setSwReg(reg);
-
-          // Check for updates on registration
-          reg.update();
-
-          // Listen for SW updates
-          reg.addEventListener("updatefound", () => {
-            const installing = reg.installing;
-            if (!installing) return;
-            installing.addEventListener("statechange", () => {
-              if (installing.state === "installed" && navigator.serviceWorker.controller) {
-                setIsUpdateAvailable(true);
+      if (import.meta.env.DEV) {
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          for (const registration of registrations) {
+            registration.unregister().then((unregistered) => {
+              if (unregistered) {
+                console.log("[SW] Unregistered active service worker in development mode.");
               }
             });
-          });
-        })
-        .catch((err) => console.warn("[SW] Registration failed:", err));
+          }
+        });
+      } else {
+        navigator.serviceWorker
+          .register("/sw.js", { scope: "/" })
+          .then((reg) => {
+            setSwReg(reg);
 
-      // Detect controller change (after SW update)
-      navigator.serviceWorker.addEventListener("controllerchange", () => {
-        window.location.reload();
-      });
+            // Check for updates on registration
+            reg.update();
+
+            // Listen for SW updates
+            reg.addEventListener("updatefound", () => {
+              const installing = reg.installing;
+              if (!installing) return;
+              installing.addEventListener("statechange", () => {
+                if (installing.state === "installed" && navigator.serviceWorker.controller) {
+                  setIsUpdateAvailable(true);
+                }
+              });
+            });
+          })
+          .catch((err) => console.warn("[SW] Registration failed:", err));
+
+        // Detect controller change (after SW update)
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+          window.location.reload();
+        });
+      }
     }
 
     return () => {

@@ -108,6 +108,12 @@ export type Database = {
           updated_at: string;
           user_id: string;
           ville: string | null;
+          metier_recherche: string | null;
+          certifications: Json | null;
+          niveau_etudes: string | null;
+          formations: Json | null;
+          interets: string[] | null;
+          mobilite: Json | null;
         };
         Insert: {
           bio?: string | null;
@@ -123,6 +129,12 @@ export type Database = {
           updated_at?: string;
           user_id: string;
           ville?: string | null;
+          metier_recherche?: string | null;
+          certifications?: Json | null;
+          niveau_etudes?: string | null;
+          formations?: Json | null;
+          interets?: string[] | null;
+          mobilite?: Json | null;
         };
         Update: {
           bio?: string | null;
@@ -138,6 +150,12 @@ export type Database = {
           updated_at?: string;
           user_id?: string;
           ville?: string | null;
+          metier_recherche?: string | null;
+          certifications?: Json | null;
+          niveau_etudes?: string | null;
+          formations?: Json | null;
+          interets?: string[] | null;
+          mobilite?: Json | null;
         };
         Relationships: [];
       };
@@ -154,6 +172,14 @@ export type Database = {
           site_web: string | null;
           statut: Database["public"]["Enums"]["company_status"];
           updated_at: string;
+          pays: string | null;
+          adresse: string | null;
+          nombre_employes: number | null;
+          annee_creation: number | null;
+          networks: Json | null;
+          registre_commerce: string | null;
+          numero_fiscal: string | null;
+          docs_complementaires: string[] | null;
         };
         Insert: {
           created_at?: string;
@@ -167,6 +193,14 @@ export type Database = {
           site_web?: string | null;
           statut?: Database["public"]["Enums"]["company_status"];
           updated_at?: string;
+          pays?: string | null;
+          adresse?: string | null;
+          nombre_employes?: number | null;
+          annee_creation?: number | null;
+          networks?: Json | null;
+          registre_commerce?: string | null;
+          numero_fiscal?: string | null;
+          docs_complementaires?: string[] | null;
         };
         Update: {
           created_at?: string;
@@ -180,6 +214,14 @@ export type Database = {
           site_web?: string | null;
           statut?: Database["public"]["Enums"]["company_status"];
           updated_at?: string;
+          pays?: string | null;
+          adresse?: string | null;
+          nombre_employes?: number | null;
+          annee_creation?: number | null;
+          networks?: Json | null;
+          registre_commerce?: string | null;
+          numero_fiscal?: string | null;
+          docs_complementaires?: string[] | null;
         };
         Relationships: [];
       };
@@ -268,6 +310,20 @@ export type Database = {
           teletravail: string | null;
           titre: string;
           updated_at: string;
+          departement: string | null;
+          missions_principales: string | null;
+          responsabilites: string | null;
+          objectifs: string | null;
+          niveau_etudes_min: string | null;
+          experience_min: number | null;
+          competences_souhaitees: string[] | null;
+          certifications_souhaitees: string[] | null;
+          langues_souhaitees: string[] | null;
+          date_limite: string | null;
+          salaire_texte: string | null;
+          avantages: string | null;
+          horaires: string | null;
+          criteres_ia: Json | null;
         };
         Insert: {
           company_id: string;
@@ -286,6 +342,20 @@ export type Database = {
           teletravail?: string | null;
           titre: string;
           updated_at?: string;
+          departement?: string | null;
+          missions_principales?: string | null;
+          responsabilites?: string | null;
+          objectifs?: string | null;
+          niveau_etudes_min?: string | null;
+          experience_min?: number | null;
+          competences_souhaitees?: string[] | null;
+          certifications_souhaitees?: string[] | null;
+          langues_souhaitees?: string[] | null;
+          date_limite?: string | null;
+          salaire_texte?: string | null;
+          avantages?: string | null;
+          horaires?: string | null;
+          criteres_ia?: Json | null;
         };
         Update: {
           company_id?: string;
@@ -304,6 +374,20 @@ export type Database = {
           teletravail?: string | null;
           titre?: string;
           updated_at?: string;
+          departement?: string | null;
+          missions_principales?: string | null;
+          responsabilites?: string | null;
+          objectifs?: string | null;
+          niveau_etudes_min?: string | null;
+          experience_min?: number | null;
+          competences_souhaitees?: string[] | null;
+          certifications_souhaitees?: string[] | null;
+          langues_souhaitees?: string[] | null;
+          date_limite?: string | null;
+          salaire_texte?: string | null;
+          avantages?: string | null;
+          horaires?: string | null;
+          criteres_ia?: Json | null;
         };
         Relationships: [
           {
@@ -396,6 +480,14 @@ export type Database = {
           telephone: string | null;
           updated_at: string;
           ville: string | null;
+          fonction: string | null;
+          whatsapp: string | null;
+          linkedin: string | null;
+          date_naissance: string | null;
+          sexe: string | null;
+          nationalite: string | null;
+          adresse: string | null;
+          permis_conduire: string | null;
         };
         Insert: {
           created_at?: string;
@@ -406,6 +498,14 @@ export type Database = {
           telephone?: string | null;
           updated_at?: string;
           ville?: string | null;
+          fonction?: string | null;
+          whatsapp?: string | null;
+          linkedin?: string | null;
+          date_naissance?: string | null;
+          sexe?: string | null;
+          nationalite?: string | null;
+          adresse?: string | null;
+          permis_conduire?: string | null;
         };
         Update: {
           created_at?: string;
@@ -416,6 +516,14 @@ export type Database = {
           telephone?: string | null;
           updated_at?: string;
           ville?: string | null;
+          fonction?: string | null;
+          whatsapp?: string | null;
+          linkedin?: string | null;
+          date_naissance?: string | null;
+          sexe?: string | null;
+          nationalite?: string | null;
+          adresse?: string | null;
+          permis_conduire?: string | null;
         };
         Relationships: [];
       };

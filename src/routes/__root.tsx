@@ -7,7 +7,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { Suspense, useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { AuthProvider } from "@/lib/auth-context";
@@ -156,7 +156,18 @@ function RootComponent() {
       <AuthProvider>
         <AuthInvalidator />
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
+        <Suspense
+          fallback={
+            <div className="min-h-screen flex items-center justify-center bg-background">
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-10 h-10 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+                <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Chargement…</span>
+              </div>
+            </div>
+          }
+        >
+          <Outlet />
+        </Suspense>
         <Toaster />
         {/* PWA: install banner + offline indicator */}
         <PWAInstallBanner />

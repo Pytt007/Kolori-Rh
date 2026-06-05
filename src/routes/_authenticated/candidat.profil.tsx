@@ -1,4 +1,4 @@
-﻿import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -978,7 +978,7 @@ function CandidatProfil() {
                 <Label className="text-xs font-mono uppercase tracking-widest text-muted-foreground">
                   Mobilité géographique & Télétravail
                 </Label>
-                <div className="grid grid-cols-3 gap-3 p-3 border border-border bg-[#f8fafc] rounded-xl">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 border border-border bg-[#f8fafc] rounded-xl">
                   <label className="flex items-center gap-2 text-xs font-bold text-muted-foreground cursor-pointer select-none">
                     <Checkbox
                       checked={mobilite.demenagement}
@@ -1154,7 +1154,7 @@ function CandidatProfil() {
                       className="rounded-xl text-sm"
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="grid gap-1.5">
                       <Label className="text-xs">Ville</Label>
                       <Input

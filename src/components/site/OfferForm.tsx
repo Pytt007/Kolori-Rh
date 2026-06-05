@@ -62,10 +62,12 @@ export function OfferForm({
   initial,
   onSubmit,
   submitLabel,
+  onPublish,
 }: {
   initial?: Partial<OfferFormValues>;
   onSubmit: (v: OfferFormValues) => Promise<void>;
   submitLabel: string;
+  onPublish?: (v: OfferFormValues) => Promise<void>;
 }) {
   const [form, setForm] = useState<OfferFormValues>({
     titre: initial?.titre ?? "",
@@ -256,11 +258,17 @@ export function OfferForm({
     }));
   };
 
+  const [submitAction, setSubmitAction] = useState<"brouillon" | "publiee">("brouillon");
+
   async function handle(e: FormEvent) {
     e.preventDefault();
     setSaving(true);
     try {
-      await onSubmit(form);
+      if (onPublish && submitAction === "publiee") {
+        await onPublish(form);
+      } else {
+        await onSubmit(form);
+      }
     } finally {
       setSaving(false);
     }
@@ -1048,22 +1056,44 @@ export function OfferForm({
       </div>
 
       {/* STICKY FLOATING ACTION BAR */}
-      <div className="sticky bottom-4 z-40 bg-white/90 backdrop-blur-md border border-border/80 p-4 px-6 rounded-2xl shadow-xl flex items-center justify-between gap-4 mt-8 animate-reveal">
-        <div className="text-xs text-muted-foreground flex items-center gap-2 font-medium">
+      <div className="sticky bottom-4 z-40 bg-white/95 backdrop-blur-md border border-border/80 p-4 px-6 rounded-2xl shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-8 animate-reveal">
+        <div className="text-xs text-muted-foreground flex items-center gap-2 font-medium justify-center sm:justify-start">
           <AlertCircle className="h-4.5 w-4.5 shrink-0" style={{ color: sumWeights === 100 ? '#059669' : '#d97706' }} />
           {sumWeights === 100 ? (
             <span>Pondérations IA : ✓ 100%</span>
           ) : (
-            <span className="text-amber-600">Pondérations IA : {sumWeights}% / 100% — Pensez à équilibrer.</span>
+            <span className="text-amber-600 text-center sm:text-left">Pondérations IA : {sumWeights}% / 100% — Pensez à équilibrer.</span>
           )}
         </div>
-        <Button
-          type="submit"
-          disabled={saving}
-          className="bg-[#059669] hover:bg-[#059669]/90 disabled:opacity-50 text-white rounded-xl px-8 shadow-md h-11 text-xs font-semibold"
-        >
-          {saving ? "Sauvegarde..." : submitLabel}
-        </Button>
+        {onPublish ? (
+          <div className="flex flex-col sm:flex-row gap-2.5 w-full sm:w-auto">
+            <Button
+              type="submit"
+              disabled={saving}
+              onClick={() => setSubmitAction("brouillon")}
+              variant="outline"
+              className="border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl w-full sm:w-auto px-6 h-11 text-xs font-semibold"
+            >
+              {saving && submitAction === "brouillon" ? "Sauvegarde..." : submitLabel}
+            </Button>
+            <Button
+              type="submit"
+              disabled={saving}
+              onClick={() => setSubmitAction("publiee")}
+              className="bg-[#059669] hover:bg-[#059669]/90 disabled:opacity-50 text-white rounded-xl w-full sm:w-auto px-8 shadow-md h-11 text-xs font-semibold"
+            >
+              {saving && submitAction === "publiee" ? "Publication..." : "Publier l'offre"}
+            </Button>
+          </div>
+        ) : (
+          <Button
+            type="submit"
+            disabled={saving}
+            className="bg-[#059669] hover:bg-[#059669]/90 disabled:opacity-50 text-white rounded-xl w-full sm:w-auto px-8 shadow-md h-11 text-xs font-semibold"
+          >
+            {saving ? "Sauvegarde..." : submitLabel}
+          </Button>
+        )}
       </div>
     </form>
   );

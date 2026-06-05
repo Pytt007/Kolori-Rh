@@ -1,4 +1,4 @@
-﻿import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
@@ -84,13 +84,13 @@ function AdminOffres() {
 
       if (error) throw error;
 
-      // Load risk scores
-      const { data: alerts } = await supabase
+      // Load risk scores (fraud_alerts table not in generated types, cast to any)
+      const { data: alerts } = await (supabase as any)
         .from("fraud_alerts")
         .select("ressource_id, score")
         .eq("type", "suspicious_offer");
 
-      const alertsMap = (alerts ?? []).reduce((acc, curr) => {
+      const alertsMap = ((alerts as any[]) ?? []).reduce((acc: Record<string, number>, curr: any) => {
         acc[curr.ressource_id] = curr.score;
         return acc;
       }, {} as Record<string, number>);
